@@ -5979,7 +5979,8 @@
 
       window.showHostCardExecutionPopup({ playerName: 'Host (Equipo ' + team.name + ')', card: card, targetTeamIdx: ti }, (rounds) => {
         card.duration = rounds + ' rondas';
-        executeGlobalCardEvent(card);
+        // Changed to applyAffliction so it registers as an active effect
+        applyAffliction(card, 'team', ti);
         removeTeamCard(ti, ci);
         renderInventoryModal();
         updateInventoryBadge();
@@ -5993,7 +5994,8 @@
 
       window.showHostCardExecutionPopup({ playerName: 'Host (Jugador ' + player.name + ')', card: card, targetTeamIdx: ti, targetPlayerName: player.name }, (rounds) => {
         card.duration = rounds + ' rondas';
-        executeGlobalCardEvent(card);
+        // Changed to applyAffliction so it registers as an active effect
+        applyAffliction(card, 'player', ti, player.name);
         removePlayerCard(ti, pi, ci);
         renderInventoryModal();
         updateInventoryBadge();
@@ -7720,8 +7722,25 @@ REGLAS ESTRICTAS:
         }
 
         html += `<div class="tv-revealed" style="margin-top:20px;animation:tvSlideUp 0.5s ease-out;">${s.revealed}</div>`;
+      } else if (s.question) {
+        // Question revealed but answer NOT revealed
+        if (s.category) html += `<div class="tv-category" style="font-size:clamp(12px,1.5vw,18px);margin-bottom:12px;">${s.category.toUpperCase()}</div>`;
+        if (s.imageUrl) html += `<img class="tv-image" src="${s.imageUrl}" alt="" style="animation:tvPopIn 0.5s ease-out;">`;
+        html += `<div class="tv-question-text" style="animation:tvPopIn 0.5s ease-out;">${s.question}</div>`;
+
+        if (s.opciones && s.opciones.length > 0) {
+          const singleCol = s.type === 'order' || s.type === 'matching';
+          const cols = singleCol ? '1fr' : '1fr 1fr';
+          html += `<div style="display:grid;grid-template-columns:${cols};gap:8px;width:min(820px,70vw);animation:tvPopIn 0.6s ease-out;">` +
+            s.opciones.map(o => `
+          <div class="tv-option">
+            <span class="tv-opt-letter">${o.letter}</span>
+            <span>${o.text}</span>
+          </div>`).join('') +
+            '</div>';
+        }
       } else {
-        // Not revealed -> suspense animation
+        // Neither question nor answer revealed -> suspense animation
         if (s.category) {
           html += `<div style="font-family:Cinzel,serif;font-size:clamp(30px,4vw,60px);letter-spacing:6px;color:#c9a227;text-transform:uppercase;text-align:center;text-shadow:0 0 30px rgba(201,162,39,0.8);">${s.category.toUpperCase()}</div>`;
         } else {
@@ -8067,14 +8086,19 @@ REGLAS ESTRICTAS:
           clearInterval(interval);
           const result = Math.floor(Math.random() * 20) + 1;
           const color = result >= 15 ? '#44cc66' : result >= 10 ? '#9966cc' : result >= 5 ? '#cc4444' : '#aa2222';
+          window._diceRollResultShowing = true;
           if (diceWrap) diceWrap.innerHTML = '<div style="text-align:center;padding:10px;"><div style="font-family:Cinzel Decorative,serif;font-size:80px;color:' + color + ';text-shadow:0 0 30px ' + color + ';">' + result + '</div><div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:' + color + ';margin-top:4px;">ENVIADO AL HOST</div></div>';
           if (window.db && typeof _playerRoom !== 'undefined' && _playerRoom) {
             window.db.ref('rooms/' + _playerRoom + '/diceRoll').set({ rolling: false, result: result, resultMsg: '🎲 ' + result + ' — tirado por ' + _playerName, resultColor: color, rolledBy: _playerName, ts: Date.now() });
             window.db.ref('rooms/' + _playerRoom + '/diceEnabled').remove();
           }
-          setTimeout(function () { if (diceWrap) { diceWrap.style.display = 'none'; diceWrap.innerHTML = ''; } }, 4000);
+          setTimeout(function () {
+            window._diceRollResultShowing = false;
+            if (diceWrap) { diceWrap.style.display = 'none'; diceWrap.innerHTML = ''; }
+          }, 4000);
         }
       }, 80);
+    };
     };
 
     function playerRenderInventory() {
@@ -8085,7 +8109,6 @@ REGLAS ESTRICTAS:
       let html = '';
 
       if (myTeam) {
-        // My team cards
         html += `<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:3px;color:#8b6914;margin-bottom:8px;">🛡 CARTAS DEL EQUIPO</div>`;
         const teamCards = myTeam.cards || [];
         if (teamCards.length) {
@@ -8094,7 +8117,6 @@ REGLAS ESTRICTAS:
           html += `<div style="font-family:IM Fell English,serif;font-size:12px;color:#8b6914;font-style:italic;">Sin cartas de equipo</div>`;
         }
 
-        // My player cards
         html += `<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:3px;color:#8b6914;margin:14px 0 8px;">⚔ MIS CARTAS PERSONALES</div>`;
         const me = myTeam.players?.find(p => p.name === _playerName);
         const myCards = me?.cards || [];
@@ -8105,7 +8127,6 @@ REGLAS ESTRICTAS:
         }
       }
 
-      // Afflictions from other teams
       html += `<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:3px;color:#cc4444;margin:14px 0 8px;">💀 AFLIXIONES ACTIVAS</div>`;
       const afflictions = s.afflictions?.[_playerTeamIdx] || [];
       const personalAffl = s.personalAfflictions?.[_playerName] || [];
@@ -8144,12 +8165,12 @@ REGLAS ESTRICTAS:
           if (btn && btn.dataset.state !== 'sent') { btn.textContent = '⏱ ' + bz.jugador + ' llegó primero'; btn.style.cssText = 'width:100%;padding:16px;font-family:Cinzel,serif;font-size:14px;border-radius:50px;display:block;background:rgba(20,10,0,.8);border:3px solid #555;color:#666;cursor:default;animation:none;'; }
         }
       });
-      // Dice: listen for when host enables dice for this player
       window.db.ref('rooms/' + _playerRoom + '/diceEnabled').on('value', snap => {
         const d = snap.val();
         const diceWrap = document.getElementById('pg-dice-wrap');
         if (!diceWrap) return;
         if (d && d.playerName === _playerName) {
+          window._diceRollResultShowing = false;
           diceWrap.style.display = 'block';
           diceWrap.innerHTML = `<div style="text-align:center;padding:14px 0;">
             <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:#c9a227;margin-bottom:10px;">🎲 EL HOST TE HABILITÓ EL DADO</div>
@@ -8731,6 +8752,29 @@ REGLAS ESTRICTAS:
             else srcTeam.cards = srcTeam.cards.filter((_, i) => i !== action.cardIdx);
             renderInventoryModal(); renderActiveCardsPanel(); broadcastToTV(); saveGameState();
             if (typeof pushNotif === 'function') pushNotif('💀', '<strong>' + action.playerName + '</strong> afligió al equipo <strong>' + tgtTeam.name + '</strong>: <em>' + action.card.name + '</em>');
+          }
+        }
+      });
+
+      window.db.ref('rooms/' + TV_ROOM_CODE + '/diceRoll').on('value', snap => {
+        const val = snap.val();
+        if (val && val.rolling === false && val.result !== undefined) {
+          const textEl = document.getElementById('dice-result-text');
+          const numEl = document.getElementById('dice-num');
+          const d20 = document.getElementById('dice-d20');
+          const glow = document.getElementById('dice-glow');
+
+          if (d20) { d20.style.animation = 'none'; void d20.offsetWidth; d20.style.animation = 'diceRoll 0.5s ease'; }
+          if (numEl) {
+            numEl.textContent = val.result;
+            numEl.style.color = val.resultColor;
+          }
+          if (glow) {
+            glow.style.background = `radial-gradient(circle at center, ${val.resultColor}88 0%, transparent 60%)`;
+            glow.style.opacity = '1';
+          }
+          if (textEl) {
+            textEl.innerHTML = `<span style="color:${val.resultColor};">${val.resultMsg}</span>`;
           }
         }
       });
