@@ -3977,41 +3977,54 @@
           </div>
 
           <!-- Question text -->
-          <div style="display:flex;gap:5px;align-items:flex-start;">
-            <textarea class="input-dnd q-textarea" id="q-text"
-              placeholder="Escribe la pregunta aquí, o usa 🔮 IA para generar una..." oninput="autoResizeTextarea(this)"
-              style="overflow:hidden; resize:none; min-height:60px; flex:1;"></textarea>
-            <button type="button" id="hint-btn" onclick="generateHint()" title="Pista con IA"
-              style="flex-shrink:0;padding:7px 10px;border:1px solid #9966cc;color:#9966cc;background:rgba(80,40,120,.15);font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:2px;white-space:nowrap;">💡
-              Pista</button>
-          </div>
-
-          <!-- Dynamic answer area (rendered by type) -->
-          <div id="q-answers-area"></div>
-
-          <!-- Hint section -->
-          <div id="hint-section"
-            style="display:none;margin:6px 0;padding:10px 14px;background:rgba(100,50,150,.12);border:1px solid rgba(150,80,200,.35);border-radius:5px;">
-            <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#9966cc;margin-bottom:5px;">💡
-              PISTA (solo tú la ves)</div>
-            <div id="hint-text"
-              style="font-family:IM Fell English,serif;font-size:13px;color:#d4b8f0;line-height:1.6;font-style:italic;">
+          <div id="host-q-wrapper" style="position:relative;">
+            <div id="host-q-overlay"
+              style="position:absolute;inset:-8px;z-index:20;background:rgba(10,5,0,0.95);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;border-radius:6px;border:1px dashed #c9a227;flex-direction:column;gap:12px;">
+              <div style="font-family:Cinzel,serif;font-size:16px;color:#c9a227;letter-spacing:4px;">PREGUNTA OCULTA
+              </div>
+              <button type="button" onclick="revealHostQuestion()"
+                style="padding:16px 32px;background:linear-gradient(135deg,#c9a227,#8b6914);color:#1a0800;font-family:Cinzel,serif;font-size:16px;font-weight:bold;letter-spacing:3px;border:none;border-radius:4px;cursor:pointer;box-shadow:0 0 20px rgba(201,162,39,0.5);">REVELAR
+                PREGUNTA</button>
             </div>
-          </div>
-          <!-- Reveal Answer with tooltip -->
-          <div style="position:relative;width:100%;">
-            <button class="btn-reveal" onclick="revealAnswer()" id="btn-reveal-answer" style="display:none;width:100%;"
-              onmouseenter="showAnswerTooltip()" onmouseleave="hideAnswerTooltip()">
-              👁 Mostrar Respuesta
-            </button>
-            <div id="answer-tooltip"
-              style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.95);border:1px solid var(--gold-dark);border-radius:6px;padding:10px 14px;font-family:IM Fell English,serif;font-size:13px;color:#8acc60;min-width:200px;max-width:320px;white-space:normal;z-index:200;box-shadow:0 -4px 16px rgba(0,0,0,.6);text-align:center;pointer-events:none;">
-              <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#6aaa60;margin-bottom:5px;">
-                RESPUESTA (solo tú ves esto)</div>
-              <div id="answer-tooltip-text"></div>
+
+            <div style="display:flex;gap:5px;align-items:flex-start;">
+              <textarea class="input-dnd q-textarea" id="q-text"
+                placeholder="Escribe la pregunta aquí, o usa 🔮 IA para generar una..."
+                oninput="autoResizeTextarea(this)"
+                style="overflow:hidden; resize:none; min-height:60px; flex:1;"></textarea>
+              <button type="button" id="hint-btn" onclick="generateHint()" title="Pista con IA"
+                style="flex-shrink:0;padding:7px 10px;border:1px solid #9966cc;color:#9966cc;background:rgba(80,40,120,.15);font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:2px;white-space:nowrap;">💡
+                Pista</button>
             </div>
+
+            <!-- Dynamic answer area (rendered by type) -->
+            <div id="q-answers-area"></div>
+
+            <!-- Hint section -->
+            <div id="hint-section"
+              style="display:none;margin:6px 0;padding:10px 14px;background:rgba(100,50,150,.12);border:1px solid rgba(150,80,200,.35);border-radius:5px;">
+              <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#9966cc;margin-bottom:5px;">💡
+                PISTA (solo tú la ves)</div>
+              <div id="hint-text"
+                style="font-family:IM Fell English,serif;font-size:13px;color:#d4b8f0;line-height:1.6;font-style:italic;">
+              </div>
+            </div>
+
+            <!-- Reveal Answer with tooltip -->
+            <div style="position:relative;width:100%;">
+              <button class="btn-reveal" onclick="revealAnswer()" id="btn-reveal-answer"
+                style="display:none;width:100%;" onmouseenter="showAnswerTooltip()" onmouseleave="hideAnswerTooltip()">
+                👁 Mostrar Respuesta
+              </button>
+              <div id="answer-tooltip"
+                style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.95);border:1px solid var(--gold-dark);border-radius:6px;padding:10px 14px;font-family:IM Fell English,serif;font-size:13px;color:#8acc60;min-width:200px;max-width:320px;white-space:normal;z-index:200;box-shadow:0 -4px 16px rgba(0,0,0,.6);text-align:center;pointer-events:none;">
+                <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#6aaa60;margin-bottom:5px;">
+                  RESPUESTA (solo tú ves esto)</div>
+                <div id="answer-tooltip-text"></div>
+              </div>
+            </div>
+            <div id="answer-reveal-box" style="display:none;"></div>
           </div>
-          <div id="answer-reveal-box" style="display:none;"></div>
 
           <!-- Timer (for lightning round) -->
           <div id="timer-zone" style="display:none;">
@@ -5728,13 +5741,34 @@
     }
 
     function toggleCardDetail(id, ti, scope, ci, pi) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      // Close all others first
-      document.querySelectorAll('.inv-card-detail').forEach(d => {
-        if (d.id !== id) d.style.display = 'none';
-      });
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      let c;
+      if (scope === 'team') {
+        c = GAME.teams[ti]?.cards[ci];
+      } else {
+        c = GAME.teams[ti]?.players[pi]?.cards[ci];
+      }
+      if (!c) return;
+
+      const ctype = c.type || guessCardType(c);
+
+      document.getElementById('card-popup-overlay')?.remove();
+      const overlay = document.createElement('div');
+      overlay.id = 'card-popup-overlay';
+      overlay.innerHTML = `
+      <div class="card-popup-wrap" id="card-popup-wrap" style="transform:scale(1);">
+        <div class="card-popup popup-${ctype}">
+          <button class="dnd-card-close" onclick="document.getElementById('card-popup-overlay').remove()">×</button>
+          <div class="dnd-card-icon" style="text-align:center;font-size:50px;">${c.icon || '🃏'}</div>
+          <div class="dnd-card-title">${c.name}</div>
+          <div class="dnd-card-desc">${c.effect || c.desc || ''}</div>
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <button onclick="document.getElementById('card-popup-overlay').remove(); ${scope === 'team' ? `executeTeamCard(${ti},${ci})` : `executePlayerCard(${ti},${pi},${ci})`};" style="flex:1;padding:12px;background:linear-gradient(135deg,#c9a227,#8b6914);color:#1a0800;border:none;border-radius:4px;font-family:Cinzel,serif;cursor:pointer;font-weight:bold;">⚡ Ejecutar</button>
+            <button onclick="document.getElementById('card-popup-overlay').remove(); ${scope === 'team' ? `removeTeamCard(${ti},${ci})` : `removePlayerCard(${ti},${pi},${ci})`};renderInventoryModal();updateInventoryBadge();" style="flex:1;padding:12px;background:rgba(255,255,255,0.1);color:#aaa;border:1px solid #444;border-radius:4px;font-family:Cinzel,serif;cursor:pointer;">✕ Descartar</button>
+          </div>
+        </div>
+      </div>`;
+      document.body.appendChild(overlay);
+      setTimeout(() => document.getElementById('card-popup-wrap').style.transform = 'translateY(0)', 10);
     }
 
     function updateInventoryBadge() {
@@ -5857,13 +5891,13 @@
       if (card) showToast(`🃏 ${card.icon || ''} ${card.name} — usada por ${team.name}`);
     }
 
-    window.showHostCardExecutionPopup = function(action, callback) {
-        const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay';
-        overlay.style.zIndex = '9999';
-        let targetText = action.targetPlayerName ? action.targetPlayerName : (GAME.teams[action.targetTeamIdx]?.name || 'Todos/Global');
-        
-        overlay.innerHTML = `
+    window.showHostCardExecutionPopup = function (action, callback) {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.style.zIndex = '9999';
+      let targetText = action.targetPlayerName ? action.targetPlayerName : (GAME.teams[action.targetTeamIdx]?.name || 'Todos/Global');
+
+      overlay.innerHTML = `
             <div class="modal-box" style="text-align:center; max-width:340px; background:linear-gradient(135deg,#2a1010,#100505); border:2px solid #c9a227;">
                 <div style="font-family:Cinzel,serif;font-size:12px;color:#f4e4bc;margin-bottom:8px;letter-spacing:2px;">⚔ EJECUTANDO CARTA ⚔</div>
                 <div style="font-family:IM Fell English,serif;font-size:18px;color:#f4e4bc;margin-bottom:12px;">
@@ -5872,44 +5906,83 @@
                     <div style="margin-top:6px;font-size:14px;color:#aaa;">Objetivo: <strong>${targetText}</strong></div>
                 </div>
                 <div style="font-size:12px;color:#aaa;margin-bottom:16px;">${action.card.effect || ''}</div>
-                <div id="exec-d20-auto" style="font-size:60px; animation:pulse 1s infinite;">🎲</div>
-                <div style="font-size:10px;color:#888;margin-top:10px;">Calculando duración (D20)...</div>
+                <div id="exec-d20-auto" style="font-size:60px;">🎲</div>
+                <div style="font-size:10px;color:#888;margin-top:10px;">Determina la duración de la carta</div>
+                <div id="exec-btns" style="display:flex;gap:10px;margin-top:16px;">
+                  <button id="btn-roll-d20" style="flex:1;padding:10px;background:linear-gradient(135deg,#c9a227,#8b6914);color:#1a0800;border:none;border-radius:4px;font-family:Cinzel,serif;cursor:pointer;">Tirar Dado</button>
+                  <button id="btn-ignore-d20" style="flex:1;padding:10px;background:rgba(255,255,255,0.1);color:#aaa;border:1px solid #444;border-radius:4px;font-family:Cinzel,serif;cursor:pointer;">Ignorar (1 Ronda)</button>
+                </div>
             </div>
         `;
-        document.body.appendChild(overlay);
+      document.body.appendChild(overlay);
 
+      document.getElementById('btn-roll-d20').onclick = () => {
+        document.getElementById('exec-btns').style.display = 'none';
         let ticks = 0;
         const interval = setInterval(() => {
-            const fake = Math.floor(Math.random()*20)+1;
-            const el = document.getElementById('exec-d20-auto');
-            if(el) el.innerHTML = '<span style="color:#c9a227;font-family:Cinzel Decorative,serif;">' + fake + '</span>';
-            ticks++;
-            if (ticks > 12) {
-                clearInterval(interval);
-                const result = Math.floor(Math.random()*20)+1;
-                if(el) el.innerHTML = `
-                    <span style="color:#44cc66;font-family:Cinzel Decorative,serif;font-size:80px;">${result}</span>
-                    <div style="font-size:14px;color:#8acc60;margin-top:5px;font-family:Cinzel,serif;">¡DURARÁ ${result} RONDAS!</div>
-                `;
-                setTimeout(() => {
-                    overlay.remove();
-                    if(callback) callback(result);
-                }, 3500);
-            }
+          const fake = Math.floor(Math.random() * 20) + 1;
+          const el = document.getElementById('exec-d20-auto');
+          if (el) el.innerHTML = '<span style="color:#c9a227;font-family:Cinzel Decorative,serif;">' + fake + '</span>';
+          ticks++;
+          if (ticks > 12) {
+            clearInterval(interval);
+            const result = Math.floor(Math.random() * 20) + 1;
+            if (el) el.innerHTML = `
+                        <span style="color:#44cc66;font-family:Cinzel Decorative,serif;font-size:80px;">${result}</span>
+                        <div style="font-size:14px;color:#8acc60;margin-top:5px;font-family:Cinzel,serif;">¡DURARÁ ${result} RONDAS!</div>
+                    `;
+            setTimeout(() => {
+              overlay.remove();
+              if (callback) callback(result);
+            }, 3500);
+          }
         }, 80);
+      };
+
+      document.getElementById('btn-ignore-d20').onclick = () => {
+        overlay.remove();
+        if (callback) callback(1);
+      };
+    };
+
+    window.revealHostQuestion = function () {
+      window._questionRevealed = true;
+      const overlay = document.getElementById('host-q-overlay');
+      if (overlay) overlay.style.display = 'none';
+      broadcastToTV();
+    };
+
+    window.showActiveCardDetail = function (name, effect, appliedBy, remaining) {
+      document.getElementById('card-popup-overlay')?.remove();
+      const overlay = document.createElement('div');
+      overlay.id = 'card-popup-overlay';
+      overlay.innerHTML = `
+      <div class="card-popup-wrap" id="card-popup-wrap" style="transform:scale(1);">
+        <div class="card-popup popup-good">
+          <button class="dnd-card-close" onclick="document.getElementById('card-popup-overlay').remove()">×</button>
+          <div class="dnd-card-icon" style="text-align:center;font-size:50px;">🃏</div>
+          <div class="dnd-card-watermark">🃏</div>
+          <div class="dnd-card-title">${name}</div>
+          <div class="dnd-card-type">Aplicado por: ${appliedBy}</div>
+          <div class="dnd-card-desc">${effect}</div>
+          <div class="dnd-card-duration" style="margin-top:10px;color:#44aa66;font-family:Cinzel,serif;">Tiempo Restante: ${remaining}</div>
+        </div>
+      </div>`;
+      document.body.appendChild(overlay);
+      setTimeout(() => document.getElementById('card-popup-wrap').style.transform = 'translateY(0)', 10);
     };
 
     window.executeTeamCard = function (ti, ci) {
       const team = GAME.teams[ti];
       if (!team || !team.cards || team.cards.length <= ci) return;
       const card = team.cards[ci];
-      
+
       window.showHostCardExecutionPopup({ playerName: 'Host (Equipo ' + team.name + ')', card: card, targetTeamIdx: ti }, (rounds) => {
-          card.duration = rounds + ' rondas';
-          executeGlobalCardEvent(card);
-          removeTeamCard(ti, ci);
-          renderInventoryModal();
-          updateInventoryBadge();
+        card.duration = rounds + ' rondas';
+        executeGlobalCardEvent(card);
+        removeTeamCard(ti, ci);
+        renderInventoryModal();
+        updateInventoryBadge();
       });
     };
 
@@ -5917,13 +5990,13 @@
       const player = GAME.teams[ti]?.players[pi];
       if (!player || !player.cards || player.cards.length <= ci) return;
       const card = player.cards[ci];
-      
+
       window.showHostCardExecutionPopup({ playerName: 'Host (Jugador ' + player.name + ')', card: card, targetTeamIdx: ti, targetPlayerName: player.name }, (rounds) => {
-          card.duration = rounds + ' rondas';
-          executeGlobalCardEvent(card);
-          removePlayerCard(ti, pi, ci);
-          renderInventoryModal();
-          updateInventoryBadge();
+        card.duration = rounds + ' rondas';
+        executeGlobalCardEvent(card);
+        removePlayerCard(ti, pi, ci);
+        renderInventoryModal();
+        updateInventoryBadge();
       });
     };
 
@@ -6193,6 +6266,11 @@
       const q = GAME.questionQueue[index];
       const qText = document.getElementById('q-text');
 
+      window._questionRevealed = false;
+      const hostOverlay = document.getElementById('host-q-overlay');
+      if (hostOverlay) hostOverlay.style.display = 'flex';
+
+
       // effectiveType is used for both rendering and populating
       const effectiveType = q.tipo || type;
 
@@ -6246,79 +6324,33 @@
       const bar = document.getElementById('active-cards-bar');
       if (!bar || !GAME.teams) return;
 
-      // Build: team cards + player cards + afflictions
-      const teamCards = [];
       const afflictions = [];
-
       GAME.teams.forEach((t, ti) => {
-        // Team cards (inventory)
-        (t.cards || []).forEach((cd, ci) => {
-          teamCards.push({ ...cd, ownerName: t.name, ownerColor: t.color, ownerType: 'team', ti, ci });
-        });
-        // Team afflictions
-        (t.afflictions || []).forEach(a => {
-          afflictions.push({ ...a, targetName: t.name, targetColor: t.color, targetType: 'team' });
-        });
-        // Player cards + afflictions
+        (t.afflictions || []).forEach(a => afflictions.push({ ...a, targetName: t.name, targetColor: t.color, targetType: 'team' }));
         (t.players || []).forEach((p, pi) => {
-          (p.cards || []).forEach((cd, ci) => {
-            teamCards.push({ ...cd, ownerName: p.name, ownerColor: t.color, ownerType: 'player', ti, ci, pi });
-          });
-          (p.afflictions || []).forEach(a => {
-            afflictions.push({ ...a, targetName: p.name, targetColor: t.color, targetType: 'player', teamName: t.name });
-          });
+          (p.afflictions || []).forEach(a => afflictions.push({ ...a, targetName: p.name, targetColor: t.color, targetType: 'player', teamName: t.name }));
         });
       });
 
-      const TYPE_COLORS = { bad: '#cc4444', good: '#44aa66', player: '#4488cc', dice: '#9966cc' };
-      const hasAnything = teamCards.length > 0 || afflictions.length > 0;
-      if (!hasAnything) { bar.style.display = 'none'; return; }
+      if (afflictions.length === 0) { bar.style.display = 'none'; return; }
       bar.style.display = 'block';
 
-      let html = '';
-
-      // === INVENTORY CARDS ===
-      if (teamCards.length > 0) {
-        html += `<div class="acb-header" onclick="this.nextElementSibling.classList.toggle('open');" style="cursor:pointer;">
-          <span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:var(--gold);">🃏 CARTAS ACTIVAS (${teamCards.length})</span>
-          <span style="color:var(--gold-dark);">▾</span>
-        </div>
-        <div class="acb-body open" style="padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;">
-          ${teamCards.map(cd => `
-            <span onclick="expandCardPopup(event,${cd.ti},${cd.ci})"
-              style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;
-                     border:1px solid ${cd.ownerColor}66;border-radius:3px;
-                     background:${cd.ownerColor}15;
-                     font-family:IM Fell English,serif;font-size:12px;color:${cd.ownerColor};cursor:pointer;"
-              onmouseover="this.style.background='${cd.ownerColor}30'"
-              onmouseout="this.style.background='${cd.ownerColor}15'">
-              <span style="font-size:16px;">${cd.icon || '🃏'}</span>
-              <span>${cd.name}</span>
-              <span style="font-size:9px;opacity:.55;">${cd.ownerName}</span>
-            </span>`).join('')}
-        </div>`;
-      }
-
-      // === AFFLICTIONS STATUS ===
-      if (afflictions.length > 0) {
-        html += `<div style="border-top:1px solid rgba(204,68,68,.2);padding:8px 12px;">
-          <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:#cc4444;margin-bottom:6px;">💀 AFLIXIONES ACTIVAS</div>
+      let html = `<div style="padding:8px 12px;">
+          <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:#c9a227;margin-bottom:6px;">✨ EFECTOS Y CARTAS ACTIVAS</div>
           <div style="display:flex;flex-direction:column;gap:5px;">
             ${afflictions.map(a => `
-              <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;
-                           background:rgba(139,0,0,.15);border:1px solid rgba(204,68,68,.35);border-radius:5px;">
-                <span style="font-size:16px;">${a.icon || '💀'}</span>
+              <div onclick="showActiveCardDetail('${(a.name || '').replace(/'/g, "\\'")}','${(a.effect || '').replace(/'/g, "\\'")}','${a.appliedBy || 'Host'}','${a.remaining || '?'}')" style="display:flex;align-items:center;gap:8px;padding:6px 10px;
+                           background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.35);border-radius:5px;cursor:pointer;">
+                <span style="font-size:16px;">${a.icon || '🃏'}</span>
                 <div style="flex:1;min-width:0;">
-                  <span style="font-family:Cinzel,serif;font-size:10px;color:#ff8888;">${a.name}</span>
-                  <span style="font-family:IM Fell English,serif;font-size:10px;color:#cc4444;margin-left:6px;">→ ${a.targetName}${a.targetType === 'player' ? ' (' + a.teamName + ')' : ''}</span>
-                  <span style="font-family:Cinzel,serif;font-size:9px;color:#8b6914;margin-left:6px;">Aplicado por: ${a.appliedBy || 'Host'}</span>
+                  <span style="font-family:Cinzel,serif;font-size:10px;color:#f4e4bc;">${a.name}</span>
+                  <span style="font-family:IM Fell English,serif;font-size:10px;color:var(--gold-dark);margin-left:6px;">→ ${a.targetName}${a.targetType === 'player' ? ' (' + a.teamName + ')' : ''}</span>
+                  <span style="font-family:Cinzel,serif;font-size:9px;color:#8b6914;margin-left:6px;">Por: ${a.appliedBy || 'Host'}</span>
                 </div>
-                <span style="font-family:Cinzel,serif;font-size:10px;color:#cc4444;background:rgba(0,0,0,.4);padding:2px 8px;border-radius:10px;white-space:nowrap;">${a.remaining || '?'}</span>
+                <span style="font-family:Cinzel,serif;font-size:10px;color:#c9a227;background:rgba(0,0,0,.4);padding:2px 8px;border-radius:10px;white-space:nowrap;">${a.remaining || '?'}</span>
               </div>`).join('')}
           </div>
         </div>`;
-      }
-
       bar.innerHTML = html;
     }
 
@@ -7271,7 +7303,7 @@ REGLAS ESTRICTAS:
     async function broadcastToTV() {
       const activeTeams = (GAME.teams && GAME.teams.length > 0) ? GAME.teams : STATE.teams;
       if (!activeTeams || activeTeams.length === 0) return;
-      const qText = document.getElementById('q-text')?.value || '';
+      const qText = (window._questionRevealed !== false) ? (document.getElementById('q-text')?.value || '') : '';
       const qType = document.getElementById('q-type')?.value || '';
       const qCat = document.getElementById('q-category')?.value || '';
       const imgUrl = (GAME.questionQueue && GAME.questionQueue[GAME.currentQIndex]?.imageUrl) || '';
@@ -7691,10 +7723,10 @@ REGLAS ESTRICTAS:
       } else {
         // Not revealed -> suspense animation
         if (s.category) {
-          html += `<div style="font-family:Cinzel,serif;font-size:clamp(30px,4vw,60px);letter-spacing:6px;color:#c9a227;text-transform:uppercase;text-align:center;text-shadow:0 0 30px rgba(201,162,39,0.8);animation:fadeIn 1s ease both;">${s.category.toUpperCase()}</div>`;
+          html += `<div style="font-family:Cinzel,serif;font-size:clamp(30px,4vw,60px);letter-spacing:6px;color:#c9a227;text-transform:uppercase;text-align:center;text-shadow:0 0 30px rgba(201,162,39,0.8);">${s.category.toUpperCase()}</div>`;
         } else {
-          html += `<div style="font-size:clamp(60px,10vw,100px);line-height:1;animation:tvPulseQ 2s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(201,162,39,0.7));overflow:visible;display:block;padding:10px 0;">❓</div>`;
-          html += `<div style="font-family:Cinzel,serif;color:rgba(139,105,20,0.8);letter-spacing:4px;font-size:clamp(11px,1.4vw,16px);animation:fadeIn 1.5s ease both;">Prepárate para la pregunta...</div>`;
+          html += `<div style="font-size:clamp(60px,10vw,100px);line-height:1;filter:drop-shadow(0 0 30px rgba(201,162,39,0.7));overflow:visible;display:block;padding:10px 0;">❓</div>`;
+          html += `<div style="font-family:Cinzel,serif;color:rgba(139,105,20,0.8);letter-spacing:4px;font-size:clamp(11px,1.4vw,16px);">Prepárate para la pregunta...</div>`;
         }
       }
 
