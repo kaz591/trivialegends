@@ -4077,10 +4077,19 @@
           </div>
         </div>
 
-        <!-- D20 DICE — hidden by default, toggle with nav button -->
+        <!-- D20 DICE — host enables for specific player -->
         <div class="gothic-panel dice-section" id="dice-section" style="display:none;">
           <div class="section-title" style="font-size:9px; letter-spacing:3px; margin-bottom:14px;">🎲 Dado del Destino
             D20 🎲</div>
+          <!-- Player selector for dice -->
+          <div id="dice-player-select" style="margin-bottom:12px;">
+            <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:#8b6914;margin-bottom:8px;">
+              HABILITAR DADO PARA:</div>
+            <div id="dice-player-btns" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+            <div id="dice-enabled-label"
+              style="font-family:IM Fell English,serif;font-size:11px;color:#c9a227;font-style:italic;margin-top:6px;min-height:16px;">
+            </div>
+          </div>
           <div class="dice-wrap" id="dice-wrap" onclick="rollDice()">
             <div class="dice-d20" id="dice-d20">
               <div class="dice-face top">
@@ -4093,7 +4102,7 @@
             </div>
             <div class="dice-glow" id="dice-glow"></div>
           </div>
-          <div class="dice-result-text" id="dice-result-text">Toca el dado para lanzar</div>
+          <div class="dice-result-text" id="dice-result-text">Selecciona un jugador y habilita el dado</div>
         </div>
 
         <!-- CARD DRAW ZONE -->
@@ -5121,6 +5130,12 @@
       showNotifBell();
       startListeningForPlayerJoins();
       broadcastToTV();
+      // Write team roster to Firebase so players can join before first question
+      if (window.db && TV_ROOM_CODE) {
+        const teamRoster = GAME.teams.map(t => ({ name: t.name, color: t.color, crest: t.crest, score: 0, cards: [], afflictions: [], players: t.players }));
+        window.db.ref('rooms/' + TV_ROOM_CODE + '/roster').set({ teams: teamRoster, ts: Date.now() });
+      }
+      renderDicePlayerBtns();
     }
 
     // ==================== SCOREBOARD ====================
@@ -6768,6 +6783,40 @@ REGLAS ESTRICTAS:
     }
 
     // ==================== DICE ====================
+    let _diceEnabledForPlayer = null; // { ti, pi, name } or null
+
+    function renderDicePlayerBtns() {
+      const wrap = document.getElementById('dice-player-btns');
+      if (!wrap || !GAME.teams) return;
+      let html = '';
+      GAME.teams.forEach((t, ti) => {
+        (t.players || []).forEach((p, pi) => {
+          const isActive = _diceEnabledForPlayer && _diceEnabledForPlayer.ti === ti && _diceEnabledForPlayer.pi === pi;
+          html += `<button onclick="enableDiceForPlayer(${ti},${pi})" style="padding:6px 12px;border:2px solid ${isActive ? t.color : t.color + '55'};border-radius:4px;background:${isActive ? t.color + '33' : 'rgba(0,0,0,0.4)'};color:${t.color};font-family:Cinzel,serif;font-size:10px;cursor:pointer;transition:all .2s;">${isActive ? '🎲' : '○'} ${p.name}</button>`;
+        });
+      });
+      if (!html) html = '<span style="font-family:IM Fell English,serif;font-size:11px;color:#8b6914;font-style:italic;">Sin jugadores</span>';
+      wrap.innerHTML = html;
+    }
+
+    function enableDiceForPlayer(ti, pi) {
+      const player = GAME.teams[ti]?.players[pi];
+      if (!player) return;
+      _diceEnabledForPlayer = { ti, pi, name: player.name };
+      renderDicePlayerBtns();
+      const lbl = document.getElementById('dice-enabled-label');
+      if (lbl) lbl.textContent = `🎲 ${player.name} puede tirar el dado`;
+      const textEl = document.getElementById('dice-result-text');
+      if (textEl) textEl.textContent = 'Esperando que ' + player.name + ' tire el dado...';
+      // Broadcast to Firebase so player's phone shows the dice button
+      if (window.db && TV_ROOM_CODE) {
+        window.db.ref('rooms/' + TV_ROOM_CODE + '/diceEnabled').set({
+          playerName: player.name, ti, pi, ts: Date.now()
+        });
+      }
+      showToast('🎲 Dado habilitado para ' + player.name);
+    }
+
     function rollDice() {
       // Animate on TV first (suspense)
       if (window.db && TV_ROOM_CODE) {
@@ -6810,6 +6859,13 @@ REGLAS ESTRICTAS:
           cardType = 'bad'; resultMsg = '💀 PIFIA — Maldición Severa'; resultColor = '#aa2222';
         }
         if (textEl) { textEl.textContent = resultMsg; textEl.style.color = resultColor; }
+
+        // Clear dice enabled
+        _diceEnabledForPlayer = null;
+        renderDicePlayerBtns();
+        const lbl = document.getElementById('dice-enabled-label');
+        if (lbl) lbl.textContent = '';
+        if (window.db && TV_ROOM_CODE) window.db.ref('rooms/' + TV_ROOM_CODE + '/diceEnabled').remove();
 
         // Broadcast to TV
         if (window.db && TV_ROOM_CODE) {
@@ -7341,6 +7397,8 @@ REGLAS ESTRICTAS:
       @keyframes tvSlideUp { 0% { transform: translateY(60px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
       @keyframes tvZoomIn { 0% { transform: scale(0.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
       @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+      @keyframes tvCatReveal { 0% { opacity:0; transform:scale(0.5) translateY(30px); filter:blur(8px); } 60% { opacity:1; transform:scale(1.05) translateY(-4px); filter:blur(0); } 100% { opacity:1; transform:scale(1) translateY(0); filter:blur(0); } }
+      @keyframes tvPulseQ { 0%,100% { transform:scale(1); filter:drop-shadow(0 0 20px rgba(201,162,39,0.5)); } 50% { transform:scale(1.06); filter:drop-shadow(0 0 50px rgba(201,162,39,0.9)); } }
 
       /* Score gained floating bubble */
       @keyframes scoreBubble {
@@ -7573,12 +7631,12 @@ REGLAS ESTRICTAS:
 
         html += `<div class="tv-revealed" style="margin-top:20px;animation:tvSlideUp 0.5s ease-out;">${s.revealed}</div>`;
       } else {
-        // Not revealed -> cool animation with category
+        // Not revealed -> suspense animation
         if (s.category) {
-          html += `<div class="tv-category" style="font-size:clamp(30px,4vw,50px);margin-bottom:20px;text-shadow:0 0 30px rgba(201,162,39,0.7);animation:tvZoomIn 0.8s cubic-bezier(0.175,0.885,0.32,1.275);">${s.category.toUpperCase()}</div>`;
+          html += `<div style="font-family:Cinzel,serif;font-size:clamp(20px,3.5vw,48px);letter-spacing:6px;color:#c9a227;text-transform:uppercase;text-align:center;text-shadow:0 0 30px rgba(201,162,39,0.8);animation:tvCatReveal 1s cubic-bezier(0.22,1,0.36,1) both;">${s.category.toUpperCase()}</div>`;
         }
-        html += `<div style="font-size:80px;animation:pulse 2s infinite;filter:drop-shadow(0 0 30px var(--gold));">❓</div>`;
-        html += `<div style="font-family:Cinzel,serif;color:var(--gold-dark);margin-top:20px;letter-spacing:4px;font-size:14px;animation:fadeIn 1s;">Preparate para la pregunta...</div>`;
+        html += `<div style="font-size:clamp(60px,10vw,100px);line-height:1;animation:tvPulseQ 2s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(201,162,39,0.7));overflow:visible;display:block;padding:10px 0;">❓</div>`;
+        html += `<div style="font-family:Cinzel,serif;color:rgba(139,105,20,0.8);letter-spacing:4px;font-size:clamp(11px,1.4vw,16px);animation:fadeIn 1.5s ease both;">Prepárate para la pregunta...</div>`;
       }
 
       center.innerHTML = html || `<div style="opacity:.4;font-size:clamp(14px,2vw,22px);font-style:italic;">Esperando pregunta...</div>`;
@@ -7762,6 +7820,7 @@ REGLAS ESTRICTAS:
             🔔 ¡TIMBRAR!
           </button>
         </div>
+        <div id="pg-dice-wrap" style="display:none;"></div>
       </div>
     </div>
     <div id="pg-inv-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;overflow-y:auto;padding:20px;">
@@ -7803,10 +7862,22 @@ REGLAS ESTRICTAS:
         window.db.ref('rooms/' + room + '/state').once('value', snap => {
           const state = snap.val();
           if (state && state.teams) { showTeams(state); return; }
-          // Firebase empty — fallback to localStorage (same-device mode)
-          const local = localStorage.getItem('tv_room_' + room) || localStorage.getItem('trivia_legends_tv');
-          if (local) { try { showTeams(JSON.parse(local)); return; } catch (e) { } }
-          alert('Sala no encontrada. Pide al host que inicie el juego.');
+          // Try roster (written at game start, before first question)
+          window.db.ref('rooms/' + room + '/roster').once('value', rSnap => {
+            const roster = rSnap.val();
+            if (roster && roster.teams) { showTeams(roster); return; }
+            // Firebase empty — fallback to localStorage (same-device mode)
+            const local = localStorage.getItem('tv_room_' + room) || localStorage.getItem('trivia_legends_tv');
+            if (local) { try { showTeams(JSON.parse(local)); return; } catch (e) { } }
+            // Check if room exists at all
+            window.db.ref('rooms/' + room).once('value', roomSnap => {
+              if (roomSnap.exists()) {
+                alert('Sala encontrada. El host aún no ha iniciado el juego. Espera unos segundos e intenta de nuevo.');
+              } else {
+                alert('Sala no encontrada. Verifica el código o pide al host que inicie la partida.');
+              }
+            });
+          });
         });
       } else {
         const local = localStorage.getItem('tv_room_' + room) || localStorage.getItem('trivia_legends_tv');
@@ -7955,6 +8026,22 @@ REGLAS ESTRICTAS:
         if (bz.jugador && bz.jugador !== _playerName) {
           const btn = document.querySelector('.pg-buzz-btn');
           if (btn && btn.dataset.state !== 'sent') { btn.textContent = '⏱ ' + bz.jugador + ' llegó primero'; btn.style.cssText = 'width:100%;padding:16px;font-family:Cinzel,serif;font-size:14px;border-radius:50px;display:block;background:rgba(20,10,0,.8);border:3px solid #555;color:#666;cursor:default;animation:none;'; }
+        }
+      });
+      // Dice: listen for when host enables dice for this player
+      window.db.ref('rooms/' + _playerRoom + '/diceEnabled').on('value', snap => {
+        const d = snap.val();
+        const diceWrap = document.getElementById('pg-dice-wrap');
+        if (!diceWrap) return;
+        if (d && d.playerName === _playerName) {
+          diceWrap.style.display = 'block';
+          diceWrap.innerHTML = `<div style="text-align:center;padding:14px 0;">
+            <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:#c9a227;margin-bottom:10px;">🎲 EL HOST TE HABILITÓ EL DADO</div>
+            <button onclick="playerRollDice()" style="width:100%;padding:20px;font-family:Cinzel Decorative,serif;font-size:24px;border-radius:50px;cursor:pointer;background:radial-gradient(circle at 40% 35%,#9966cc,#6633aa,#441177);border:4px solid #cc99ff;color:#fff;box-shadow:0 8px 0 #330055,0 0 40px rgba(153,102,204,.7);text-shadow:0 2px 6px rgba(0,0,0,.9);animation:redBuzz 1.4s infinite;">🎲 ¡TIRAR DADO!</button>
+          </div>`;
+        } else {
+          diceWrap.style.display = 'none';
+          diceWrap.innerHTML = '';
         }
       });
     }
@@ -8984,5 +9071,29 @@ REGLAS ESTRICTAS:
 
       // Ensure the room is immediately available for players even before the game officially starts
       setTimeout(broadcastToTV, 1500);
+
+      // Player-side dice roll function
+      window.playerRollDice = function () {
+        const diceWrap = document.getElementById('pg-dice-wrap');
+        if (diceWrap) diceWrap.innerHTML = '<div style="text-align:center;padding:16px;font-size:60px;">&#127922;</div>';
+        let ticks = 0;
+        const interval = setInterval(function () {
+          const fake = Math.floor(Math.random() * 20) + 1;
+          if (diceWrap) diceWrap.innerHTML = '<div style="text-align:center;padding:10px;font-family:Cinzel Decorative,serif;font-size:64px;color:#c9a227;">' + fake + '</div>';
+          ticks++;
+          if (ticks >= 12) {
+            clearInterval(interval);
+            const result = Math.floor(Math.random() * 20) + 1;
+            const color = result >= 15 ? '#44cc66' : result >= 10 ? '#9966cc' : result >= 5 ? '#cc4444' : '#aa2222';
+            if (diceWrap) diceWrap.innerHTML = '<div style="text-align:center;padding:10px;"><div style="font-family:Cinzel Decorative,serif;font-size:80px;color:' + color + ';text-shadow:0 0 30px ' + color + ';">' + result + '</div><div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:' + color + ';margin-top:4px;">ENVIADO AL HOST</div></div>';
+            if (window.db && typeof _playerRoom !== 'undefined' && _playerRoom) {
+              window.db.ref('rooms/' + _playerRoom + '/diceRoll').set({ rolling: false, result: result, resultMsg: '&#127922; ' + result + ' - tirado por ' + _playerName, resultColor: color, rolledBy: _playerName, ts: Date.now() });
+              window.db.ref('rooms/' + _playerRoom + '/diceEnabled').remove();
+            }
+            setTimeout(function () { if (diceWrap) { diceWrap.style.display = 'none'; diceWrap.innerHTML = ''; } }, 4000);
+          }
+        }, 80);
+      };
+
     })();
   </script>
