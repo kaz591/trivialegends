@@ -3979,7 +3979,7 @@
           <div style="display:flex;gap:5px;align-items:flex-start;">
             <textarea class="input-dnd q-textarea" id="q-text"
               placeholder="Escribe la pregunta aquí, o usa 🔮 IA para generar una..." oninput="autoResizeTextarea(this)"
-              style="overflow:hidden;resize:none;min-height:60px;flex:1;"></textarea>
+              style="overflow:hidden; resize:none; min-height:60px; flex:1;"></textarea>
             <button type="button" id="hint-btn" onclick="generateHint()" title="Pista con IA"
               style="flex-shrink:0;padding:7px 10px;border:1px solid #9966cc;color:#9966cc;background:rgba(80,40,120,.15);font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:2px;white-space:nowrap;">💡 Pista</button>
           </div>
@@ -3987,10 +3987,10 @@
           <!-- Dynamic answer area (rendered by type) -->
           <div id="q-answers-area"></div>
 
-          <!-- Hint section (shown after clicking Pista) -->
+          <!-- Hint section -->
           <div id="hint-section" style="display:none;margin:6px 0;padding:10px 14px;background:rgba(100,50,150,.12);border:1px solid rgba(150,80,200,.35);border-radius:5px;">
             <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#9966cc;margin-bottom:5px;">💡 PISTA (solo tú la ves)</div>
-            <div id="hint-text" style="font-family:IM Fell English,serif;font-size:13px;color:#d4b8f0;line-height:1.7;"></div>
+            <div id="hint-text" style="font-family:IM Fell English,serif;font-size:13px;color:#d4b8f0;line-height:1.6;font-style:italic;"></div>
           </div>
           <!-- Reveal Answer with tooltip -->
           <div style="position:relative;width:100%;">
@@ -3998,8 +3998,8 @@
               onmouseenter="showAnswerTooltip()" onmouseleave="hideAnswerTooltip()">
               👁 Mostrar Respuesta
             </button>
-            <div id="answer-tooltip" style="display:none;position:absolute;bottom:calc(100%+8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.95);border:1px solid var(--gold-dark);border-radius:6px;padding:10px 14px;font-family:IM Fell English,serif;font-size:13px;color:#8acc60;min-width:200px;max-width:320px;z-index:200;box-shadow:0 -4px 16px rgba(0,0,0,.6);text-align:center;pointer-events:none;">
-              <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#6aaa60;margin-bottom:5px;">RESPUESTA (solo tú)</div>
+            <div id="answer-tooltip" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.95);border:1px solid var(--gold-dark);border-radius:6px;padding:10px 14px;font-family:IM Fell English,serif;font-size:13px;color:#8acc60;min-width:200px;max-width:320px;white-space:normal;z-index:200;box-shadow:0 -4px 16px rgba(0,0,0,.6);text-align:center;pointer-events:none;">
+              <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#6aaa60;margin-bottom:5px;">RESPUESTA (solo tú ves esto)</div>
               <div id="answer-tooltip-text"></div>
             </div>
           </div>
@@ -5080,15 +5080,21 @@
 
     function startGame() {
       GAME.teams = STATE.teams.map((t, i) => ({
-        name: t.name, color: t.color, crest: ['🛡️','⚔️','🔮','🏹'][i]||'⚔️',
-        score: 0, cards: [], afflictions: [],
+        name: t.name,
+        color: t.color,
+        crest: ['🛡️', '⚔️', '🔮', '🏹'][i] || '⚔️',
+        score: 0,
+        cards: [],
+        afflictions: [],
         players: t.players.map(p => ({ name: p.name, correct: 0, cards: [], afflictions: [] }))
       }));
       Q_HISTORY.length = 0;
       _buzzEnabled = false;
+      // Clear Firebase from previous game
       if (window.db && TV_ROOM_CODE) {
-        ['players','playerJoins','firstBuzz','cardActions','playerNotifs','acciones','diceRoll'].forEach(k =>
-          window.db.ref('rooms/'+TV_ROOM_CODE+'/'+k).remove());
+        ['players','playerJoins','firstBuzz','cardActions','playerNotifs','acciones','diceRoll'].forEach(k => {
+          window.db.ref('rooms/'+TV_ROOM_CODE+'/'+k).remove();
+        });
       }
       showScreen('game');
       renderScoreboard();
@@ -5225,8 +5231,12 @@
       const team = (ti!==null&&ti!==undefined) ? GAME.teams[ti] : null;
       let mult = 1;
       if (team) {
-        const has2x = team.cards.some(cd=>cd.id==='g2'||cd.id==='p2'||(cd.name||'').toLowerCase().includes('doble')||(cd.name||'').includes('x2')||(cd.name||'').includes('×2'));
-        if (has2x || GAME._pendingDoubleTeam===ti) mult = 2;
+        const has2x = team.cards.some(cd =>
+          cd.id==='g2'||cd.id==='p2'||
+          (cd.name||'').toLowerCase().includes('doble')||
+          (cd.name||'').includes('x2')||(cd.name||'').includes('×2')
+        );
+        if (has2x || GAME._pendingDoubleTeam === ti) mult = 2;
       }
       return diff * mult;
     }
@@ -5257,15 +5267,15 @@
         if (pi !== null && team.players[pi]) {
           team.players[pi].correct++;
           if (team.players[pi].correct > 0 && team.players[pi].correct % 2 === 0) {
-            const capturedPi=pi, capturedTi=ti;
+            const capturedPi = pi; const capturedTi = ti;
             setTimeout(() => {
               const card = randomCard('player');
               if (card) {
                 showCardReveal(card, 'player', capturedTi, capturedPi);
-                showToast('⭐ '+team.players[capturedPi].name+' — '+team.players[capturedPi].correct+' correctas. ¡Carta!', 4000);
+                showToast(`⭐ ${team.players[capturedPi].name} — ${team.players[capturedPi].correct} correctas. ¡Carta!`, 4000);
                 if (window.db && TV_ROOM_CODE) {
                   window.db.ref('rooms/'+TV_ROOM_CODE+'/playerNotifs/'+encodeURIComponent(team.players[capturedPi].name)).push({
-                    type:'card_received', icon:card.icon||'🃏', name:card.name, effect:card.effect||'', duration:card.duration||'', cardType:'player', ts:Date.now()
+                    type:'card_received', icon:card.icon||'🃏', name:card.name, effect:card.effect||'', duration:card.duration||'', ts:Date.now()
                   });
                 }
               }
@@ -5276,9 +5286,9 @@
         showToast(`✓ ${team.name}${playerName ? ' · ' + playerName : ''} +${pts}pts`);
         checkCardTriggers(ti);
         // Consume x2 card if was active
-        const x2idx = team.cards.findIndex(cd=>cd.id==='g2'||cd.id==='p2'||(cd.name||'').toLowerCase().includes('doble')||(cd.name||'').includes('x2')||(cd.name||'').includes('×2'));
-        if (x2idx !== -1) { team.cards.splice(x2idx, 1); showToast('💥 ¡x2 consumida! +'+pts+'pt'); }
-        if (GAME._pendingDoubleTeam===ti) GAME._pendingDoubleTeam=null;
+        const x2idx = team.cards.findIndex(cd => cd.id==='g2'||cd.id==='p2'||(cd.name||'').toLowerCase().includes('doble')||(cd.name||'').includes('x2')||(cd.name||'').includes('×2'));
+        if (x2idx !== -1) { team.cards.splice(x2idx, 1); showToast('💥 ¡x2 consumida! +' + pts + 'pt'); }
+        if (GAME._pendingDoubleTeam === ti) GAME._pendingDoubleTeam = null;
       } else {
         showScoreFlash('✕', '#cc3333');
         showToast(`✕ ${team.name}${playerName ? ' · ' + playerName : ''} — Sin puntos`);
@@ -5295,15 +5305,15 @@
       document.getElementById('result-panel').style.display = 'none';
 
       renderScoreboard();
-      renderTeamCards(); updateInventoryBadge();
-      if (typeof _invSidebarOpen!=='undefined' && _invSidebarOpen) renderInventoryModal();
+      renderTeamCards(); updateInventoryBadge(); refreshInventoryIfOpen();
       renderActiveCardEffects();
       decrementAfflictions();
       renderParticipantSelector();
-      if (window.db && TV_ROOM_CODE) window.db.ref('rooms/'+TV_ROOM_CODE+'/firstBuzz').remove();
+      renderActiveCardsPanel();
+      if (window.db && TV_ROOM_CODE) window.db.ref('rooms/' + TV_ROOM_CODE + '/firstBuzz').remove();
       _buzzEnabled = false;
-      const _bBtn=document.getElementById('enable-buzz-btn');
-      if (_bBtn) { _bBtn.textContent='🔔 Habilitar Botón para Seleccionados'; _bBtn.style.opacity='1'; }
+      const _buzzBtn = document.getElementById('enable-buzz-btn');
+      if (_buzzBtn) { _buzzBtn.textContent = '🔔 Habilitar Botón para Seleccionados'; _buzzBtn.style.opacity = '1'; }
       broadcastToTV();
       saveGameState();
 
@@ -5500,15 +5510,14 @@
         showToast(`⚠ ${team.name} ya tiene 10 cartas (límite)`); return;
       }
       team.cards.push({ ...card, type });
-      saveGameState(); // persist first
+      saveGameState();
       renderTeamCards(); updateInventoryBadge();
-      if (typeof _invSidebarOpen !== 'undefined' && _invSidebarOpen) renderInventoryModal();
-      if (typeof refreshInventoryIfOpen === 'function') refreshInventoryIfOpen();
-      if (typeof refreshInventoryIfOpen === 'function') refreshInventoryIfOpen();
+      // Force re-render inventory if open
+      if (_invSidebarOpen) { renderInventoryModal(); }
       renderScoreboard();
       renderActiveCardEffects();
-      broadcastToTV();
-      if (typeof pushNotif === 'function') pushNotif(card.icon||'🃏', `Carta <strong>${card.name}</strong> → <strong>${team.name}</strong>`);
+      broadcastToTV(); // sends to player phones in real time
+      if (typeof pushNotif === 'function') pushNotif(card.icon||'🃏', `🃏 Carta <strong>${card.name}</strong> asignada a <strong>${team.name}</strong>`);
       showToast(`🃏 ${card.name} → ${team.name}`);
     }
 
@@ -6102,64 +6111,31 @@
       const q = GAME.questionQueue[index];
       const qText = document.getElementById('q-text');
 
+      // effectiveType is used for both rendering and populating
       const effectiveType = q.tipo || type;
 
       // Reset reveal
       const revBtn = document.getElementById('btn-reveal-answer');
       const revBox = document.getElementById('answer-reveal-box');
-      if (revBtn) revBtn.style.display = 'none'; // hide until question revealed
+      if (revBtn) revBtn.style.display = 'block';
       if (revBox) { revBox.style.display = 'none'; revBox.innerHTML = ''; }
 
-      // Hide hint section for new question
-      const hintSection = document.getElementById('hint-section');
-      if (hintSection) hintSection.style.display = 'none';
+      // Hint logic
+      const hintBtn = document.getElementById('hint-btn');
+      if (hintBtn) {
+        hintBtn.style.display = (effectiveType === 'open') ? 'inline-block' : 'none';
+      }
+      const hintSec = document.getElementById('hint-section');
+      if (hintSec) hintSec.style.display = 'none';
 
-      // Phase 1: Show only category + "Revelar Pregunta" button
-      // The actual question text stays hidden until host clicks the button
+      // Set text + auto-resize
       if (qText) {
         qText.value = q.pregunta || '';
         autoResizeTextarea(qText);
-        qText.style.display = 'none'; // hidden until revealed
-      }
-
-      // Show category immediately + reveal-question button
-      const catEl = document.getElementById('q-category');
-      if (catEl && q.categoria) catEl.value = q.categoria;
-
-      // Show the reveal-question button
-      let revQBtn = document.getElementById('btn-reveal-question');
-      if (!revQBtn) {
-        revQBtn = document.createElement('button');
-        revQBtn.id = 'btn-reveal-question';
-        revQBtn.className = 'btn-reveal';
-        revQBtn.style.cssText = 'display:block;width:100%;margin-bottom:6px;background:linear-gradient(135deg,#1a3a5c,#0d1f3a);border-color:#4488cc;color:#aaccff;';
-        const btnRevAnswerWrap = document.getElementById('btn-reveal-answer')?.parentElement;
-        if (btnRevAnswerWrap) btnRevAnswerWrap.insertBefore(revQBtn, btnRevAnswerWrap.firstChild);
-      }
-      revQBtn.textContent = '🔍 Revelar Pregunta';
-      revQBtn.style.display = 'block';
-      revQBtn.onclick = () => {
-        // Show question text to host + broadcast to TV
-        if (qText) qText.style.display = '';
-        revQBtn.style.display = 'none';
-        if (revBtn) revBtn.style.display = 'block';
-        // Broadcast question (not just category)
-        broadcastToTV();
-      };
-
-      // Broadcast only category (question hidden) to TV
-      // Override: send empty question so TV shows only category
-      if (window.db && TV_ROOM_CODE) {
-        const tvCatState = {
-          teams: (GAME.teams||[]).map((t,i) => ({name:t.name,color:t.color,crest:t.crest||'⚔',score:t.score||0,cards:t.cards||[],afflictions:t.afflictions||[],players:(t.players||[]).map(p=>({name:p.name,correct:p.correct||0,cards:p.cards||[],afflictions:p.afflictions||[]}))})),
-          question: '', category: q.categoria || '', type: effectiveType,
-          imageUrl: '', opciones: [], revealed: '',
-          categoryOnly: true, ts: Date.now()
-        };
-        window.db.ref('rooms/' + TV_ROOM_CODE + '/state').set(tvCatState);
       }
 
       // Category
+      const catEl = document.getElementById('q-category');
       if (catEl && q.categoria) catEl.value = q.categoria;
 
       // Always set type FIRST, then render area
@@ -6186,41 +6162,82 @@
 
     function renderActiveCardEffects() {
       const bar = document.getElementById('active-cards-bar');
-      if (!bar) return;
+      if (!bar || !GAME.teams) return;
 
-      // Build flat list with team index and card index for click handling
-      const allCards = [];
+      // Build: team cards + player cards + afflictions
+      const teamCards = [];
+      const afflictions = [];
+
       GAME.teams.forEach((t, ti) => {
-        (t.cards || []).forEach((c, ci) => {
-          allCards.push({ ...c, teamName: t.name, teamColor: t.color, ti, ci });
+        // Team cards (inventory)
+        (t.cards || []).forEach((cd, ci) => {
+          teamCards.push({ ...cd, ownerName: t.name, ownerColor: t.color, ownerType: 'team', ti, ci });
+        });
+        // Team afflictions
+        (t.afflictions || []).forEach(a => {
+          afflictions.push({ ...a, targetName: t.name, targetColor: t.color, targetType: 'team' });
+        });
+        // Player cards + afflictions
+        (t.players || []).forEach((p, pi) => {
+          (p.cards || []).forEach((cd, ci) => {
+            teamCards.push({ ...cd, ownerName: p.name, ownerColor: t.color, ownerType: 'player', ti, ci, pi });
+          });
+          (p.afflictions || []).forEach(a => {
+            afflictions.push({ ...a, targetName: p.name, targetColor: t.color, targetType: 'player', teamName: t.name });
+          });
         });
       });
 
-      if (allCards.length === 0) { bar.style.display = 'none'; return; }
+      const TYPE_COLORS = { bad: '#cc4444', good: '#44aa66', player: '#4488cc', dice: '#9966cc' };
+      const hasAnything = teamCards.length > 0 || afflictions.length > 0;
+      if (!hasAnything) { bar.style.display = 'none'; return; }
       bar.style.display = 'block';
 
-      const TYPE_COLORS = { bad: '#cc4444', good: '#44aa66', player: '#4488cc', dice: '#9966cc' };
+      let html = '';
 
-      bar.innerHTML = `
-    <div class="acb-header" onclick="this.parentElement.classList.toggle('acb-expanded'); this.parentElement.querySelector('.acb-body').classList.toggle('open');">
-      <span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:var(--gold);">🃏 CARTAS ACTIVAS (${allCards.length})</span>
-      <span class="acb-chevron" style="color:var(--gold-dark);transition:transform .2s;">▾</span>
-    </div>
-    <div class="acb-body open" style="padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;">
-      ${allCards.map(c => `
-        <span onclick="expandCardPopup(event,${c.ti},${c.ci})"
+      // === INVENTORY CARDS ===
+      if (teamCards.length > 0) {
+        html += `<div class="acb-header" onclick="this.nextElementSibling.classList.toggle('open');" style="cursor:pointer;">
+          <span style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:var(--gold);">🃏 CARTAS ACTIVAS (${teamCards.length})</span>
+          <span style="color:var(--gold-dark);">▾</span>
+        </div>
+        <div class="acb-body open" style="padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;">
+          ${teamCards.map(cd => `
+            <span onclick="expandCardPopup(event,${cd.ti},${cd.ci})"
               style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;
-                     border:1px solid ${c.teamColor}66;border-radius:3px;
-                     background:${c.teamColor}15;
-                     font-family:IM Fell English,serif;font-size:12px;color:${c.teamColor};
-                     cursor:pointer;transition:background .15s;"
-              onmouseover="this.style.background='${c.teamColor}30'"
-              onmouseout="this.style.background='${c.teamColor}15'">
-          <span style="font-size:16px;">${c.icon || '🃏'}</span>
-          <span>${c.name}</span>
-          <span style="font-size:9px;opacity:.55;margin-left:2px;">${c.teamName}</span>
-        </span>`).join('')}
-    </div>`;
+                     border:1px solid ${cd.ownerColor}66;border-radius:3px;
+                     background:${cd.ownerColor}15;
+                     font-family:IM Fell English,serif;font-size:12px;color:${cd.ownerColor};cursor:pointer;"
+              onmouseover="this.style.background='${cd.ownerColor}30'"
+              onmouseout="this.style.background='${cd.ownerColor}15'">
+              <span style="font-size:16px;">${cd.icon||'🃏'}</span>
+              <span>${cd.name}</span>
+              <span style="font-size:9px;opacity:.55;">${cd.ownerName}</span>
+            </span>`).join('')}
+        </div>`;
+      }
+
+      // === AFFLICTIONS STATUS ===
+      if (afflictions.length > 0) {
+        html += `<div style="border-top:1px solid rgba(204,68,68,.2);padding:8px 12px;">
+          <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:#cc4444;margin-bottom:6px;">💀 AFLIXIONES ACTIVAS</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            ${afflictions.map(a => `
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;
+                           background:rgba(139,0,0,.15);border:1px solid rgba(204,68,68,.35);border-radius:5px;">
+                <span style="font-size:16px;">${a.icon||'💀'}</span>
+                <div style="flex:1;min-width:0;">
+                  <span style="font-family:Cinzel,serif;font-size:10px;color:#ff8888;">${a.name}</span>
+                  <span style="font-family:IM Fell English,serif;font-size:10px;color:#cc4444;margin-left:6px;">→ ${a.targetName}${a.targetType==='player'?' ('+a.teamName+')':''}</span>
+                  <span style="font-family:Cinzel,serif;font-size:9px;color:#8b6914;margin-left:6px;">Aplicado por: ${a.appliedBy||'Host'}</span>
+                </div>
+                <span style="font-family:Cinzel,serif;font-size:10px;color:#cc4444;background:rgba(0,0,0,.4);padding:2px 8px;border-radius:10px;white-space:nowrap;">${a.remaining||'?'}</span>
+              </div>`).join('')}
+          </div>
+        </div>`;
+      }
+
+      bar.innerHTML = html;
     }
 
     function expandCardPopup(e, ti, ci) {
@@ -6515,13 +6532,34 @@
         chain: '"correcta":"respuesta"',
       };
 
-      const lockCat = document.getElementById('lock-category')?.checked && category;
-      const prompt = isRandom
-        ? `Genera 5 preguntas de trivia DIFERENTES en espanol. Dificultad: ${diffLabel}. Tipos: ${fiveTypes.join(',')}.${lockCat ? ' La PRIMERA pregunta DEBE ser de categoria: ' + category + '. Las otras 4 de categorias variadas.' : ' Categorias variadas: ' + allCats.slice(0, 12).join(',') + '.'} Mezcla categorias.${avoidHint}
+      let prompt = '';
+      if (category && category.trim() !== '') {
+        const remainingTypes = [...randomableTypes].sort(() => Math.random() - .5).slice(0, 4);
+        prompt = `Genera 5 preguntas de trivia DIFERENTES en espanol. Dificultad: ${diffLabel}.
+La PRIMERA pregunta OBLIGATORIAMENTE debe ser de la Categoria: "${category}" y Tipo: ${typeLabel}.
+Las siguientes 4 preguntas deben ser de TIPOS ALEATORIOS (${remainingTypes.join(',')}) y CATEGORIAS ALEATORIAS (${allCats.slice(0, 12).join(',')}). Mezcla categorias y tipos para las ultimas 4.${avoidHint}
 Responde SOLO JSON sin markdown:
-{"preguntas":[{"tipo":"${fiveTypes[0]}","pregunta":"...","categoria":"${lockCat || '...'}","explicacion":"...","correcta":"...",(campos segun tipo)},{"tipo":"${fiveTypes[1]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)},{"tipo":"${fiveTypes[2]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)},{"tipo":"${fiveTypes[3]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)},{"tipo":"${fiveTypes[4]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)}]}
+{"preguntas":[
+{"tipo":"${type}","pregunta":"...","categoria":"${category}","explicacion":"...",${formatByType[type] || formatByType.multiple}},
+{"tipo":"${remainingTypes[0]}","pregunta":"...","categoria":"(categoria_aleatoria)","explicacion":"...","correcta":"...",(campos segun tipo)},
+{"tipo":"${remainingTypes[1]}","pregunta":"...","categoria":"(categoria_aleatoria)","explicacion":"...","correcta":"...",(campos segun tipo)},
+{"tipo":"${remainingTypes[2]}","pregunta":"...","categoria":"(categoria_aleatoria)","explicacion":"...","correcta":"...",(campos segun tipo)},
+{"tipo":"${remainingTypes[3]}","pregunta":"...","categoria":"(categoria_aleatoria)","explicacion":"...","correcta":"...",(campos segun tipo)}
+]}
+REGLAS ESTRICTAS:
+- Exactamente 5 preguntas diferentes
+- Para multiple/image/multianswer: OBLIGATORIO 4 opciones A B C D
+- Para image: "imageSearch" es el titulo en ingles de la IMAGEN
+- Para order: opciones en orden correcto
+- Para truefalse: correcta es solo V o F
+- Para matching: usa campo pares`;
+      } else {
+        prompt = isRandom
+          ? `Genera 5 preguntas de trivia DIFERENTES en espanol. Dificultad: ${diffLabel}. Tipos: ${fiveTypes.join(',')}. Categorias: ${allCats.slice(0, 12).join(',')}. Mezcla categorias.${avoidHint}
+Responde SOLO JSON sin markdown:
+{"preguntas":[{"tipo":"${fiveTypes[0]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)},{"tipo":"${fiveTypes[1]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)},{"tipo":"${fiveTypes[2]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)},{"tipo":"${fiveTypes[3]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)},{"tipo":"${fiveTypes[4]}","pregunta":"...","categoria":"...","explicacion":"...","correcta":"...",(campos segun tipo)}]}
 Para matching usa "pares":[{"izquierda":"...","derecha":"..."}]. Para order las opciones en orden correcto. Para truefalse correcta es solo V o F. Para multiple/multianswer usa opciones.`
-        : `Genera 5 preguntas de trivia DIFERENTES en espanol. Dificultad: ${diffLabel}. Tipo: ${typeLabel}. ${category ? 'Categoria: ' + category : ('Categorias: ' + allCats.slice(0, 10).join(','))}.${avoidHint}
+          : `Genera 5 preguntas de trivia DIFERENTES en espanol. Dificultad: ${diffLabel}. Tipo: ${typeLabel}. Categorias: ${allCats.slice(0, 10).join(',')}.${avoidHint}
 Responde SOLO JSON sin markdown:
 {"preguntas":[{"tipo":"${type}","pregunta":"...","categoria":"...","explicacion":"...",${formatByType[type] || formatByType.multiple}}]}
 REGLAS ESTRICTAS:
@@ -6532,6 +6570,7 @@ REGLAS ESTRICTAS:
 - Para order: opciones en orden correcto
 - Para truefalse: correcta es solo V o F
 - Para matching: usa campo pares`;
+      }
 
       const models = [savedModel, 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-1.5-flash', 'gemini-1.5-pro'];
 
@@ -6630,8 +6669,9 @@ REGLAS ESTRICTAS:
       } else if (type === 'mime') {
         area.innerHTML = '<div class="answer-hint">Mimica — un jugador actua sin hablar</div><input class="answer-input" placeholder="Lo que deben adivinar..." style="width:100%;margin-bottom:8px;">';
       } else if (type === 'audio') {
-        const _kw=(document.getElementById('q-text')?.value||'').replace(/[¿?¡!,.:;]/g,'').split(' ').filter(w=>w.length>3).slice(0,5).join(' ');
-        area.innerHTML=`<div class="answer-hint">Audio — pega URL de YouTube y presiona ▶</div><div style="margin-bottom:8px;"><div style="font-family:IM Fell English,serif;font-size:11px;color:var(--gold-dark);font-style:italic;margin-bottom:5px;">💡 <span onclick="window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(_kw+' audio sonido'),'_blank')" style="color:#4488cc;text-decoration:underline;cursor:pointer;">Buscar en YouTube: ${_kw}</span></div><div style="display:flex;gap:6px;margin-bottom:6px;"><input id="audio-url-input" class="input-dnd" placeholder="Pega URL de YouTube aquí..." style="flex:1;font-size:11px;"><button type="button" onclick="playAudioClip()" style="padding:6px 12px;background:#cc2222;border:none;color:#fff;font-family:Cinzel,serif;font-size:11px;cursor:pointer;border-radius:3px;flex-shrink:0;">▶ Play</button></div><div id="audio-player-wrap" style="display:none;margin-bottom:8px;"><iframe id="yt-iframe" width="100%" height="90" frameborder="0" allow="autoplay" allowfullscreen style="border-radius:4px;border:1px solid var(--gold-dark);"></iframe></div></div><input class="answer-input" placeholder="Respuesta correcta..." style="width:100%;">`; 
+        const kw=(document.getElementById('q-text')?.value||'').replace(/[¿?¡!,.:;]/g,'').split(' ').filter(w=>w.length>3).slice(0,5).join(' ');
+        const ytSearchUrl='https://www.youtube.com/results?search_query='+encodeURIComponent(kw+' audio sonido');
+        area.innerHTML=`<div class="answer-hint">Audio — pega URL de YouTube y presiona ▶</div><div style="margin-bottom:8px;"><div style="font-family:IM Fell English,serif;font-size:11px;color:var(--gold-dark);font-style:italic;margin-bottom:5px;">💡 <span onclick="window.open('${ytSearchUrl}','_blank')" style="color:#4488cc;text-decoration:underline;cursor:pointer;">Buscar: ${kw||'...'}</span></div><div style="display:flex;gap:6px;margin-bottom:6px;"><input id="audio-url-input" class="input-dnd" placeholder="Pega URL de YouTube aquí..." style="flex:1;font-size:11px;"><button type="button" onclick="playAudioClip()" style="padding:6px 12px;background:#cc2222;border:none;color:#fff;font-family:Cinzel,serif;font-size:11px;cursor:pointer;border-radius:3px;flex-shrink:0;">▶ Play</button></div><div id="audio-player-wrap" style="display:none;margin-bottom:8px;"><iframe id="yt-iframe" width="100%" height="90" frameborder="0" allow="autoplay" allowfullscreen style="border-radius:4px;border:1px solid var(--gold-dark);"></iframe></div></div><input class="answer-input" placeholder="Respuesta correcta..." style="width:100%;">`; 
       } else if (type === 'chain') {
         area.innerHTML = '<div class="answer-hint">Cadena de palabras</div><input class="answer-input" placeholder="Respuesta correcta..." style="width:100%;">';
       } else if (type === 'open') {
@@ -6681,62 +6721,83 @@ REGLAS ESTRICTAS:
         showToast(`⚠ ${player.name} ya tiene 10 cartas (límite)`); return;
       }
       player.cards.push({ ...card, type });
-      saveGameState(); // persist first
+      saveGameState();
       renderTeamCards(); updateInventoryBadge();
-      if (typeof _invSidebarOpen !== 'undefined' && _invSidebarOpen) renderInventoryModal();
+      // Force re-render inventory if open
+      if (_invSidebarOpen) { renderInventoryModal(); }
       renderScoreboard();
-      broadcastToTV();
-      // Notify player's phone
+      broadcastToTV(); // real-time sync to player phones
+      // Notify player's phone about new card
       if (window.db && TV_ROOM_CODE) {
         window.db.ref('rooms/' + TV_ROOM_CODE + '/playerNotifs/' + encodeURIComponent(player.name)).push({
           type: 'card_received', icon: card.icon || '🃏', name: card.name,
-          effect: card.effect || '', duration: card.duration || '', cardType: type, ts: Date.now()
+          effect: card.effect || '', duration: card.duration || '', ts: Date.now()
         });
       }
-      if (typeof pushNotif === 'function') pushNotif(card.icon||'🃏', `Carta <strong>${card.name}</strong> → <strong>${player.name}</strong>`);
+      if (typeof pushNotif === 'function') pushNotif(card.icon||'🃏', `🃏 Carta <strong>${card.name}</strong> asignada a <strong>${player.name}</strong>`);
       showToast(`🃏 ${card.name} → ${player.name}`);
     }
 
     // ==================== DICE ====================
     function rollDice() {
-      const result = Math.floor(Math.random() * 20) + 1;
-      GAME.diceResult = result;
+      // Animate on TV first (suspense)
+      if (window.db && TV_ROOM_CODE) {
+        window.db.ref('rooms/' + TV_ROOM_CODE + '/diceRoll').set({ rolling: true, result: null, ts: Date.now() });
+      }
 
+      // Animate locally
+      const d20 = document.getElementById('dice-d20');
       const numEl = document.getElementById('dice-num');
       const textEl = document.getElementById('dice-result-text');
-      const d20 = document.getElementById('dice-d20');
       const glow = document.getElementById('dice-glow');
-
-      if (numEl) numEl.textContent = result;
+      if (numEl) numEl.textContent = '?';
       if (d20) { d20.style.animation = 'none'; void d20.offsetWidth; d20.style.animation = 'diceRoll 0.5s ease'; }
-      if (glow) { glow.style.opacity = '1'; setTimeout(() => { if (glow) glow.style.opacity = '0'; }, 1000); }
 
-      // Determine card type by result
-      let cardType, resultMsg, resultColor;
-      if (result === 20) {
-        cardType = 'good'; resultMsg = '⚔ CRÍTICO — Carta de Bendición'; resultColor = '#44cc66';
-      } else if (result >= 15) {
-        cardType = 'good'; resultMsg = `✨ ${result} — Carta de Bendición`; resultColor = '#44aa66';
-      } else if (result >= 10) {
-        cardType = 'dice'; resultMsg = `🎲 ${result} — Carta del Dado`; resultColor = '#9966cc';
-      } else if (result >= 5) {
-        cardType = 'bad'; resultMsg = `💀 ${result} — Carta de Maldición`; resultColor = '#cc4444';
-      } else if (result === 1) {
-        cardType = 'bad'; resultMsg = '💀 PIFIA — Carta de Maldición Severa'; resultColor = '#aa2222';
-      } else {
-        cardType = 'bad'; resultMsg = `💀 ${result} — Carta de Maldición`; resultColor = '#cc4444';
+      // Animate rolling numbers
+      let ticks = 0;
+      const rollInterval = setInterval(() => {
+        const fake = Math.floor(Math.random() * 20) + 1;
+        if (numEl) numEl.textContent = fake;
+        ticks++;
+        if (ticks >= 10) { clearInterval(rollInterval); finalizeRoll(); }
+      }, 80);
+
+      function finalizeRoll() {
+        const result = Math.floor(Math.random() * 20) + 1;
+        GAME.diceResult = result;
+        if (numEl) numEl.textContent = result;
+        if (glow) { glow.style.opacity = '1'; setTimeout(() => { if (glow) glow.style.opacity = '0'; }, 1500); }
+
+        let cardType, resultMsg, resultColor;
+        if (result === 20) {
+          cardType = 'good'; resultMsg = '⚔ CRÍTICO — Carta de Bendición'; resultColor = '#44cc66';
+        } else if (result >= 15) {
+          cardType = 'good'; resultMsg = `✨ ${result} — Carta de Bendición`; resultColor = '#44aa66';
+        } else if (result >= 10) {
+          cardType = 'dice'; resultMsg = `🎲 ${result} — Carta del Dado`; resultColor = '#9966cc';
+        } else if (result >= 5) {
+          cardType = 'bad'; resultMsg = `💀 ${result} — Carta de Maldición`; resultColor = '#cc4444';
+        } else {
+          cardType = 'bad'; resultMsg = '💀 PIFIA — Maldición Severa'; resultColor = '#aa2222';
+        }
+        if (textEl) { textEl.textContent = resultMsg; textEl.style.color = resultColor; }
+
+        // Broadcast to TV
+        if (window.db && TV_ROOM_CODE) {
+          window.db.ref('rooms/' + TV_ROOM_CODE + '/diceRoll').set({
+            rolling: false, result, resultMsg, resultColor, ts: Date.now()
+          });
+          // Auto-clear from TV after 8s
+          setTimeout(() => {
+            window.db.ref('rooms/' + TV_ROOM_CODE + '/diceRoll').remove();
+          }, 8000);
+        }
+
+        setTimeout(() => {
+          const card = randomCard(cardType);
+          if (card) showCardReveal(card, cardType, null);
+        }, 800);
       }
-
-      if (textEl) {
-        textEl.textContent = resultMsg;
-        textEl.style.color = resultColor;
-      }
-
-      // Show card after a short delay
-      setTimeout(() => {
-        const card = randomCard(cardType);
-        if (card) showCardReveal(card, cardType, null);
-      }, 800);
     }
 
     // ==================== SCROLL ====================
@@ -7065,7 +7126,7 @@ REGLAS ESTRICTAS:
     }
 
     async function broadcastToTV() {
-      const activeTeams = (GAME.teams && GAME.teams.length > 0) ? GAME.teams : (STATE.teams || []);
+      const activeTeams = (GAME.teams && GAME.teams.length > 0) ? GAME.teams : STATE.teams;
       if (!activeTeams || activeTeams.length === 0) return;
       const qText = document.getElementById('q-text')?.value || '';
       const qType = document.getElementById('q-type')?.value || '';
@@ -7107,16 +7168,8 @@ REGLAS ESTRICTAS:
         })),
         question: qText, category: qCat, type: qType,
         imageUrl: imgUrl, opciones, revealed, ts: Date.now(),
-        buzzEnabled: (typeof _buzzEnabled !== 'undefined') ? _buzzEnabled : false,
-        participants: (() => {
-          try {
-            if (typeof SELECTED_PARTICIPANTS === 'undefined') return [];
-            return [...SELECTED_PARTICIPANTS].map(k => {
-              const p = k.split(':');
-              return GAME.teams[+p[1]]?.players[+p[2]]?.name || null;
-            }).filter(Boolean);
-          } catch(e) { return []; }
-        })()
+        buzzEnabled: (typeof _buzzEnabled!=='undefined')?_buzzEnabled:false,
+        participants: (()=>{try{if(typeof SELECTED_PARTICIPANTS==='undefined')return[];return[...SELECTED_PARTICIPANTS].map(k=>{const p=k.split(':');return GAME.teams[+p[1]]?.players[+p[2]]?.name||null;}).filter(Boolean);}catch(e){return[];}})()
       };
 
       // Save locally
@@ -7324,18 +7377,14 @@ REGLAS ESTRICTAS:
       if (teamsEl && s.teams) {
         // Detect score changes for animation
         const prevScores = window._tvPrevScores || {};
-        teamsEl.innerHTML = s.teams.map((t, i) => {
-          const afflHtml = (t.afflictions || []).map(a =>
-            `<div style="display:flex;align-items:center;gap:3px;margin-top:2px;font-family:IM Fell English,serif;font-size:clamp(9px,.8vw,12px);color:#ff8888;line-height:1.2;">${a.icon||'💀'} <span style="opacity:.9;">${a.name}</span> <span style="font-size:.75em;color:#cc4444;background:rgba(0,0,0,.4);padding:0 4px;border-radius:8px;">${a.remaining||'?'}</span></div>`
-          ).join('');
-          return `<div class="tv-score-card ${POSITIONS[i] || 'tl'}" id="tv-card-${i}"
-               style="border-color:${t.color};box-shadow:${NEON(t)};">
-            <div class="tv-team-name" style="color:${t.color};">${t.crest || '⚔'} ${t.name}</div>
-            <div class="tv-pts" id="tv-pts-${i}" style="color:${t.color};">${t.score}</div>
-            <div class="tv-pts-label" style="color:${t.color}88;">PUNTOS</div>
-            ${afflHtml}
-          </div>`;
-        }).join('');
+        teamsEl.innerHTML = s.teams.map((t, i) => `
+      <div class="tv-score-card ${POSITIONS[i] || 'tl'}"
+           id="tv-card-${i}"
+           style="border-color:${t.color};box-shadow:${NEON(t)};">
+        <div class="tv-team-name" style="color:${t.color};">${t.crest || '⚔'} ${t.name}</div>
+        <div class="tv-pts" id="tv-pts-${i}" style="color:${t.color};">${t.score}</div>
+        <div class="tv-pts-label" style="color:${t.color}88;">PUNTOS</div>
+      </div>`).join('');
 
         // Fire animations for teams that scored
         s.teams.forEach((t, i) => {
@@ -7439,17 +7488,6 @@ REGLAS ESTRICTAS:
       }
 
       // --- LIGHTNING ---
-      // === CATEGORY ONLY MODE (before question revealed) ===
-      if (s.categoryOnly && !s.question) {
-        center.innerHTML = `
-          <div class="tv-category" style="font-size:clamp(14px,2vw,20px);color:#8b6914;letter-spacing:5px;">PRÓXIMA CATEGORÍA</div>
-          <div style="font-family:Cinzel Decorative,serif;font-size:clamp(32px,7vw,80px);color:#f4e4bc;text-align:center;text-shadow:0 0 40px rgba(201,162,39,.5),0 4px 8px rgba(0,0,0,.8);line-height:1.2;max-width:80vw;">
-            ${s.category || '?'}
-          </div>
-          <div style="font-family:IM Fell English,serif;font-size:clamp(13px,1.8vw,20px);color:rgba(244,228,188,.4);font-style:italic;margin-top:8px;">Esperando que el host revele la pregunta...</div>`;
-        return;
-      }
-
       if (s.type === 'lightning') {
         html = `<div class="tv-category" style="color:#cc2222;">⚡ RONDA RELÁMPAGO ⚡</div>`;
         if (s.question) html += `<div class="tv-question-text">${s.question}</div>`;
@@ -7463,24 +7501,32 @@ REGLAS ESTRICTAS:
       }
 
       // --- NORMAL ---
-      if (s.category) html += `<div class="tv-category">${s.category.toUpperCase()}</div>`;
-      if (s.imageUrl) html += `<img class="tv-image" src="${s.imageUrl}" alt="">`;
-      if (s.question) html += `<div class="tv-question-text">${s.question}</div>`;
+      if (s.revealed) {
+        if (s.category) html += `<div class="tv-category" style="font-size:clamp(12px,1.5vw,18px);margin-bottom:12px;">${s.category.toUpperCase()}</div>`;
+        if (s.imageUrl) html += `<img class="tv-image" src="${s.imageUrl}" alt="" style="animation:tvPopIn 0.5s ease-out;">`;
+        if (s.question) html += `<div class="tv-question-text" style="animation:tvPopIn 0.5s ease-out;">${s.question}</div>`;
 
-      // Options — always show if available and not yet revealed
-      if (!s.revealed && s.opciones && s.opciones.length > 0) {
-        const singleCol = s.type === 'order' || s.type === 'matching';
-        const cols = singleCol ? '1fr' : '1fr 1fr';
-        html += `<div style="display:grid;grid-template-columns:${cols};gap:8px;width:min(820px,70vw);">` +
-          s.opciones.map(o => `
-        <div class="tv-option">
-          <span class="tv-opt-letter">${o.letter}</span>
-          <span>${o.text}</span>
-        </div>`).join('') +
-          '</div>';
+        if (s.opciones && s.opciones.length > 0) {
+          const singleCol = s.type === 'order' || s.type === 'matching';
+          const cols = singleCol ? '1fr' : '1fr 1fr';
+          html += `<div style="display:grid;grid-template-columns:${cols};gap:8px;width:min(820px,70vw);animation:tvPopIn 0.6s ease-out;">` +
+            s.opciones.map(o => `
+          <div class="tv-option">
+            <span class="tv-opt-letter">${o.letter}</span>
+            <span>${o.text}</span>
+          </div>`).join('') +
+            '</div>';
+        }
+
+        html += `<div class="tv-revealed" style="margin-top:20px;animation:tvSlideUp 0.5s ease-out;">${s.revealed}</div>`;
+      } else {
+        // Not revealed -> cool animation with category
+        if (s.category) {
+          html += `<div class="tv-category" style="font-size:clamp(30px,4vw,50px);margin-bottom:20px;text-shadow:0 0 30px rgba(201,162,39,0.7);animation:tvZoomIn 0.8s cubic-bezier(0.175,0.885,0.32,1.275);">${s.category.toUpperCase()}</div>`;
+        }
+        html += `<div style="font-size:80px;animation:pulse 2s infinite;filter:drop-shadow(0 0 30px var(--gold));">❓</div>`;
+        html += `<div style="font-family:Cinzel,serif;color:var(--gold-dark);margin-top:20px;letter-spacing:4px;font-size:14px;animation:fadeIn 1s;">Preparate para la pregunta...</div>`;
       }
-
-      if (s.revealed) html += `<div class="tv-revealed">${s.revealed}</div>`;
 
       center.innerHTML = html || `<div style="opacity:.4;font-size:clamp(14px,2vw,22px);font-style:italic;">Esperando pregunta...</div>`;
     }
@@ -7598,6 +7644,7 @@ REGLAS ESTRICTAS:
       .pg-opt:active{background:rgba(201,162,39,.15);}
       .pg-opt-letter{font-family:Cinzel,serif;font-size:14px;color:#c9a227;min-width:24px;flex-shrink:0;}
       .pg-buzz-btn{padding:18px;background:linear-gradient(135deg,#1a5c1a,#0d3d0d);border:2px solid #2ecc71;color:#fff;font-family:Cinzel,serif;font-size:16px;letter-spacing:3px;border-radius:8px;cursor:pointer;width:100%;text-align:center;animation:buzzPulse 1.5s infinite;box-shadow:0 0 20px rgba(46,204,113,.4);}
+      @keyframes redBuzz{0%,100%{box-shadow:0 8px 0 #660000,0 0 40px rgba(255,0,0,.6),inset 0 3px 6px rgba(255,255,255,.25);}50%{box-shadow:0 8px 0 #660000,0 0 70px rgba(255,0,0,.85),inset 0 3px 6px rgba(255,255,255,.25);transform:scale(1.02);}}
       @keyframes buzzPulse{0%,100%{box-shadow:0 0 20px rgba(46,204,113,.4);}50%{box-shadow:0 0 40px rgba(46,204,113,.7);}}
       .pg-section{font-family:Cinzel,serif;font-size:9px;letter-spacing:3px;color:#8b6914;text-transform:uppercase;margin:4px 0;}
       .pg-card-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:4px;font-size:12px;border:1px solid;margin:3px;}
@@ -7630,25 +7677,34 @@ REGLAS ESTRICTAS:
       <div class="p-sub">⚔ ESCOGE TU NOMBRE ⚔</div>
       <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:12px;">
         <div id="ps-warrior-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
-        <div style="font-family:IM Fell English,serif;font-size:12px;color:#8b6914;text-align:center;font-style:italic;">— o ingresa un nombre personalizado —</div>
-        <input class="p-input" id="p-name-input" type="text" placeholder="Nombre de guerrero..." maxlength="20">
-        <button class="p-btn" onclick="playerJoin()">&#9876; ENTRAR A LA BATALLA</button>
-      </div>
-    </div>
-
+        <div id="pg-enemies" class="pg-enemy-scores"></div>
+        <div id="pg-afflictions" style="display:none;flex-wrap:wrap;gap:5px;"></div>
+        <div id="pg-my-cards" style="display:none;margin-top:6px;"></div>
+        <div id="pg-question-wrap" style="display:none;"></div>
+        <div id="pg-buzz-wrap" style="display:none;text-align:center;padding:14px 0;">
+          <button class="pg-buzz-btn" data-state="" onclick="playerBuzz()"
+            style="width:100%;padding:22px;font-family:Cinzel Decorative,serif;font-size:22px;letter-spacing:2px;
+                   border-radius:50px;cursor:pointer;display:block;
+                   background:radial-gradient(circle at 40% 35%,#ff5555,#cc0000,#880000);
+                   border:4px solid #ff3333;color:#fff;
+                   box-shadow:0 8px 0 #660000,0 0 40px rgba(255,0,0,.6),inset 0 3px 6px rgba(255,255,255,.25);
+                   text-shadow:0 2px 6px rgba(0,0,0,.9);animation:redBuzz 1.4s infinite;">
+            🔔 ¡TIMBRAR!
+          </button>
+        </div>
     <!-- SCREEN 4: Main game -->
     <div class="p-screen" id="ps-game">
       <div class="pg-wrap" id="pg-wrap">
-        <div class="pg-bar">
-          <div>
-            <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:#8b6914;" id="pg-player-label">GUERRERO</div>
-            <div style="font-family:Cinzel,serif;font-size:13px;color:#c9a227;" id="pg-team-label">EQUIPO</div>
+        <div style="position: sticky; top: 0; background: #0d0800; z-index: 10; padding: 10px 0 10px 0; margin-bottom: 10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <div style="font-family:Cinzel,serif;font-size:14px;color:#c9a227;font-weight:bold; max-width:65%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="pg-team-label">EQUIPO</div>
+            <button class="pg-inv-btn" onclick="playerToggleInventory()" style="margin-bottom:0;">&#128214; Inventario</button>
           </div>
-          <button class="pg-inv-btn" onclick="playerToggleInventory()">&#128214; Inventario</button>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:#8b6914;margin-bottom:4px;">MIS PUNTOS</div>
-          <div class="pg-my-score" id="pg-my-score" style="color:#c9a227;">0</div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:#8b6914; max-width:50%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="pg-player-label">GUERRERO</div>
+            <div style="font-family:Cinzel,serif;font-size:12px;letter-spacing:2px;color:#8b6914;">PUNTOS: <span id="pg-my-score" style="color:#c9a227;font-size:16px;font-weight:bold;">0</span></div>
+          </div>
+          <div style="height:1px; background:rgba(201,162,39,.2); margin-top:10px;"></div>
         </div>
         <div id="pg-enemies" class="pg-enemy-scores"></div>
         <div id="pg-afflictions" style="display:none;flex-wrap:wrap;gap:5px;"></div>
@@ -7740,39 +7796,35 @@ REGLAS ESTRICTAS:
       playerShowScreen('ps-name');
     };
 
-    window.playerPickWarrior = function (name) {
-      const inp = document.getElementById('p-name-input');
-      if (inp) { inp.value = name; inp.focus(); }
+    window.playerPickWarrior = function (pi, name) {
+      document.getElementById('p-name-input').value = name;
     };
 
     window.playerJoin = function () {
       const name = document.getElementById('p-name-input')?.value.trim();
-      if (!name) { alert('Escribe o elige un nombre para continuar'); return; }
+      if (!name) { alert('Ingresa tu nombre'); return; }
       _playerName = name;
-
-      // Register presence in Firebase
       window.db.ref('rooms/'+_playerRoom+'/players/'+_playerTeamIdx+'/'+encodeURIComponent(name))
-        .set({ name, team: _playerTeamIdx, ts: Date.now(), online: true });
-
-      // Signal host to sync name (replaces "Guerrero N" placeholders)
+        .set({ name, team:_playerTeamIdx, ts:Date.now(), online:true });
       window.db.ref('rooms/'+_playerRoom+'/playerJoins/'+_playerTeamIdx+'/'+encodeURIComponent(name))
-        .set({ name, teamIdx: _playerTeamIdx, ts: Date.now() });
-
+        .set({ name, teamIdx:_playerTeamIdx, ts:Date.now() });
       const plbl = document.getElementById('pg-player-label');
       const tlbl = document.getElementById('pg-team-label');
       if (plbl) plbl.textContent = name.toUpperCase();
       if (tlbl) tlbl.style.color = _playerTeamColor;
-
       playerShowScreen('ps-game');
       playerStartListening();
     };
 
     window.playerBuzz = function () {
-      if (_buzzSent) return; _buzzSent=true;
-      const btn=document.querySelector('.pg-buzz-btn');
-      if (btn) { btn.dataset.state='sent'; btn.textContent='✅ ¡Timbrado!'; btn.style.cssText='width:100%;padding:22px;font-family:Cinzel Decorative,serif;font-size:20px;border-radius:50px;display:block;background:radial-gradient(circle at 40% 35%,#44bb66,#228844,#115522);border:4px solid #27ae60;color:#fff;box-shadow:0 8px 0 #115522;animation:none;cursor:default;'; }
-      const buzzRef=window.db?.ref('rooms/'+_playerRoom+'/firstBuzz');
-      if (buzzRef) { buzzRef.transaction(cur=>{if(cur===null)return{jugador:_playerName,equipo:_playerTeamIdx,color:_playerTeamColor,ts:Date.now()};return undefined;},(err,committed)=>{if(!committed&&btn){btn.textContent='⏱ Otro llegó primero';btn.style.background='radial-gradient(circle at 40% 35%,#555,#333,#222)';btn.style.borderColor='#555';btn.style.boxShadow='none';}}); }
+      if (_buzzSent) return; _buzzSent = true;
+      const btn = document.querySelector('.pg-buzz-btn');
+      if (btn) { btn.dataset.state='sent'; btn.textContent='✅ ¡Timbrado!'; btn.style.cssText='width:100%;padding:22px;font-family:Cinzel Decorative,serif;font-size:20px;border-radius:50px;display:block;background:radial-gradient(circle at 40% 35%,#44bb66,#228844,#115522);border:4px solid #27ae60;color:#fff;box-shadow:0 8px 0 #115522,0 0 30px rgba(46,204,113,.5);animation:none;cursor:default;'; }
+      const buzzRef = window.db?.ref('rooms/'+_playerRoom+'/firstBuzz');
+      if (buzzRef) {
+        buzzRef.transaction(cur => { if(cur===null) return {jugador:_playerName,equipo:_playerTeamIdx,color:_playerTeamColor,ts:Date.now()}; return undefined; },
+        (err,committed) => { if(!committed&&btn){btn.textContent='⏱ Otro llegó primero';btn.style.background='radial-gradient(circle at 40% 35%,#555,#333,#222)';btn.style.borderColor='#555';btn.style.boxShadow='none';} });
+      }
     };
 
     window.sendPlayerAnswer = function (letter) {
@@ -7836,37 +7888,29 @@ REGLAS ESTRICTAS:
       el.innerHTML = html;
     }
 
+    let _lastPlayerState = null;
     function playerStartListening() {
       if (!window.db) return;
-      window.db.ref('rooms/'+_playerRoom+'/state').on('value', snap=>{
-        const s=snap.val(); if(!s) return; _lastPlayerState=s; playerRenderGameScreen(s);
+      window.db.ref('rooms/'+_playerRoom+'/state').on('value', snap => {
+        const s = snap.val(); if (!s) return;
+        _lastPlayerState = s; playerRenderGameScreen(s);
       });
       if (_playerName) {
-        window.db.ref('rooms/'+_playerRoom+'/playerNotifs/'+encodeURIComponent(_playerName)).on('child_added', snap=>{
-          const notif=snap.val(); if(!notif||Date.now()-notif.ts>60000) return;
-          if (notif.type==='affliction') showPlayerAfflictionCard(notif);
-          else if (notif.type==='card_received') showPlayerCardReceived(notif);
+        window.db.ref('rooms/'+_playerRoom+'/playerNotifs/'+encodeURIComponent(_playerName)).on('child_added', snap => {
+          const notif = snap.val();
+          if (!notif || Date.now()-notif.ts > 60000) return;
+          if (notif.type === 'affliction') showPlayerAfflictionCard(notif);
+          else if (notif.type === 'card_received') showPlayerCardReceived(notif);
         });
       }
-      window.db.ref('rooms/'+_playerRoom+'/firstBuzz').on('value', snap=>{
-        const bz=snap.val();
+      window.db.ref('rooms/'+_playerRoom+'/firstBuzz').on('value', snap => {
+        const bz = snap.val();
         if (!bz) { _buzzSent=false; const btn=document.querySelector('.pg-buzz-btn'); if(btn)btn.dataset.state=''; return; }
-        if (bz.jugador&&bz.jugador!==_playerName) {
+        if (bz.jugador && bz.jugador!==_playerName) {
           const btn=document.querySelector('.pg-buzz-btn');
           if(btn&&btn.dataset.state!=='sent'){btn.textContent='⏱ '+bz.jugador+' llegó primero';btn.style.cssText='width:100%;padding:16px;font-family:Cinzel,serif;font-size:14px;border-radius:50px;display:block;background:rgba(20,10,0,.8);border:3px solid #555;color:#666;cursor:default;animation:none;';}
         }
       });
-    }
-
-    function showPlayerCardReceived(notif) {
-      document.getElementById('player-card-recv-ov')?.remove();
-      const ov=document.createElement('div'); ov.id='player-card-recv-ov';
-      ov.style.cssText='position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:24px;';
-      const TC={bad:'#cc4444',good:'#44aa66',player:'#4488cc',dice:'#9966cc'};
-      const col=TC[notif.cardType]||'#c9a227';
-      ov.innerHTML=`<div style="max-width:320px;width:100%;text-align:center;"><div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:4px;color:${col};margin-bottom:14px;">⭐ ¡NUEVA CARTA! ⭐</div><div style="font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 20px ${col});">${notif.icon||'🃏'}</div><div style="font-family:Cinzel Decorative,serif;font-size:22px;color:${col};margin-bottom:10px;">${notif.name}</div><div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:16px;font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.7;">${notif.effect||''}</div><div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:20px;">Duración: ${notif.duration||'—'}</div><button onclick="document.getElementById('player-card-recv-ov').remove()" style="padding:14px 32px;background:linear-gradient(180deg,${col},${col}88);border:none;border-radius:6px;color:#fff;font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;cursor:pointer;width:100%;">🎉 ¡ENTENDIDO!</button></div>`;
-      ov.onclick=e=>{if(e.target===ov)ov.remove();};
-      document.body.appendChild(ov); setTimeout(()=>ov?.remove(),15000);
     }
 
     function showPlayerAfflictionCard(notif) {
@@ -7918,6 +7962,8 @@ REGLAS ESTRICTAS:
     }
 
     window._myCards = [];
+            
+    window._myCards = [];
 
     function playerRenderGameScreen(s) {
       if (!s.teams) return;
@@ -7950,13 +7996,16 @@ REGLAS ESTRICTAS:
           cardsEl.style.display = 'block';
           cardsEl.innerHTML = '<div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--gold-dark);margin-bottom:6px;">🃏 MIS CARTAS — toca para usar</div>' +
             allCards.map((cd,i) =>
-              `<button onclick="playerOpenCard(${i})" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:2px solid ${TC[cd.type]||'#c9a227'};border-radius:6px;font-size:13px;margin:3px;cursor:pointer;background:rgba(0,0,0,.45);color:${TC[cd.type]||'#c9a227'};font-family:IM Fell English,serif;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation;">${cd.icon||'🃏'} ${cd.name}${cd._src==='team'?'<span style="font-size:9px;opacity:.5;">(eq)</span>':''}</button>`).join('');
+              `<button onclick="playerOpenCard(${i})"
+                style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:2px solid ${TC[cd.type]||'#c9a227'};border-radius:6px;font-size:13px;margin:3px;cursor:pointer;background:rgba(0,0,0,.45);color:${TC[cd.type]||'#c9a227'};font-family:IM Fell English,serif;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation;">
+                ${cd.icon||'🃏'} ${cd.name}${cd._src==='team'?'<span style="font-size:9px;opacity:.5;">(eq)</span>':''}
+              </button>`).join('');
         } else {
           cardsEl.style.display = 'none';
         }
       }
 
-      // Afflictions
+      // Afflictions — persistent chips
       const myTeamAffl = myTeam.afflictions || [];
       const myPersonalAffl = me?.afflictions || [];
       const allAffl = [...myTeamAffl, ...myPersonalAffl];
@@ -7965,10 +8014,21 @@ REGLAS ESTRICTAS:
         if (allAffl.length) {
           afflEl.style.display = 'flex'; afflEl.style.flexWrap = 'wrap'; afflEl.style.gap = '5px';
           afflEl.innerHTML = '<div style="width:100%;font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#cc4444;margin-bottom:3px;">💀 AFLIXIONES ACTIVAS</div>' +
-            allAffl.map(a => `<div onclick="playerShowAfflDetail('${(a.name||'').replace(/'/g,'&#39;')}','${(a.effect||'').replace(/'/g,'&#39;')}','${a.remaining||'?'}','${(a.appliedBy||'?').replace(/'/g,'&#39;')}')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:rgba(139,0,0,.3);border:1px solid rgba(204,68,68,.5);border-radius:20px;cursor:pointer;touch-action:manipulation;margin:2px;"><span>${a.icon||'💀'}</span><span style="font-family:Cinzel,serif;font-size:9px;color:#ff8888;">${a.name}</span><span style="font-family:Cinzel,serif;font-size:8px;color:#cc4444;background:rgba(0,0,0,.4);padding:1px 5px;border-radius:10px;">${a.remaining||'?'}</span></div>`).join('');
-        } else { afflEl.style.display = 'none'; }
+            allAffl.map(a =>
+              `<div onclick="playerShowAfflDetail('${(a.name||'').replace(/'/g,'&#39;')}','${(a.effect||'').replace(/'/g,'&#39;')}','${a.remaining||'?'}','${(a.appliedBy||'?').replace(/'/g,'&#39;')}')"
+                style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:rgba(139,0,0,.3);border:1px solid rgba(204,68,68,.5);border-radius:20px;cursor:pointer;touch-action:manipulation;margin:2px;">
+                ${a.icon||'💀'} <span style="font-size:12px;">${a.name}</span>
+              </div>`).join('');
+        } else {
+          afflEl.style.display = 'none';
+        }
       }
 
+      // Update inventory modal if it's currently open
+      const ov = document.getElementById('pg-inv-overlay');
+      if (ov && ov.style.display !== 'none') {
+        playerRenderInventory();
+      }
       // Buzzer
       const qWrap = document.getElementById('pg-question-wrap');
       const buzzWrap = document.getElementById('pg-buzz-wrap');
@@ -7995,16 +8055,16 @@ REGLAS ESTRICTAS:
           if (!buzzEnabled) { _buzzSent=false; const btn=buzzWrap.querySelector('.pg-buzz-btn'); if(btn)btn.dataset.state=''; }
         }
       }
-      if (s.ts !== _lastStateTs) { _buzzSent=false; _lastStateTs=s.ts; }
+      if (s.ts !== _lastStateTs) { _buzzSent=false; _lastStateTs=s.ts; const btn=document.querySelector('.pg-buzz-btn'); if(btn)btn.dataset.state=''; }
     }
 
     window.playerOpenCard = function(i) {
       const card = window._myCards[i]; if (!card) return;
       document.getElementById('pg-card-ov')?.remove();
-      const ov = document.createElement('div'); ov.id='pg-card-ov';
+      const ov = document.createElement('div'); ov.id = 'pg-card-ov';
       ov.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center;padding:20px;';
-      const TC={bad:'#cc4444',good:'#44aa66',player:'#4488cc',dice:'#9966cc'};
-      const col=TC[card.type]||'#c9a227';
+      const TC = {bad:'#cc4444',good:'#44aa66',player:'#4488cc',dice:'#9966cc'};
+      const col = TC[card.type] || '#c9a227';
       ov.innerHTML = `<div style="max-width:320px;width:100%;background:linear-gradient(160deg,#1e1005,#0d0500);border:2px solid ${col};border-radius:10px;padding:24px;text-align:center;">
         <div style="font-size:56px;margin-bottom:8px;">${card.icon||'🃏'}</div>
         <div style="font-family:Cinzel Decorative,serif;font-size:17px;color:${col};margin-bottom:8px;">${card.name}</div>
@@ -8013,66 +8073,176 @@ REGLAS ESTRICTAS:
         <button onclick="playerUseCard(${i})" style="margin-bottom:8px;padding:13px 24px;background:linear-gradient(135deg,${col}33,${col}11);border:2px solid ${col};color:${col};font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;cursor:pointer;border-radius:5px;width:100%;display:block;touch-action:manipulation;">⚡ USAR CARTA</button>
         <button onclick="document.getElementById('pg-card-ov').remove()" style="padding:9px 24px;border:1px solid ${col}44;color:${col}88;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:5px;width:100%;display:block;">Cerrar</button>
       </div>`;
-      ov.onclick=e=>{if(e.target===ov)ov.remove();};
+      ov.onclick = e => { if(e.target===ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
     window.playerUseCard = function(i) {
-      const card=window._myCards[i]; if(!card) return;
+      const card = window._myCards[i]; if (!card) return;
       document.getElementById('pg-card-ov')?.remove();
-      if (card.isAffliction&&card.afflictTarget==='player'){playerPickTarget(card,i,'player');return;}
-      if (card.isAffliction&&card.afflictTarget==='team'){playerPickTarget(card,i,'team');return;}
-      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({card,cardIdx:i,isTeamCard:card._src==='team',playerName:_playerName,teamIdx:_playerTeamIdx,actionType:'use',ts:Date.now()});
+      if (card.isAffliction && card.afflictTarget==='player') { playerPickTarget(card, i, 'player'); return; }
+      if (card.isAffliction && card.afflictTarget==='team') { playerPickTarget(card, i, 'team'); return; }
+      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({card, cardIdx:i, isTeamCard:card._src==='team', playerName:_playerName, teamIdx:_playerTeamIdx, actionType:'use', ts:Date.now()});
       playerShowToast('⚡ Carta enviada: '+card.name);
     };
 
-    window.playerPickTarget = function(card,ci,mode) {
-      const s=_lastPlayerState; if(!s?.teams) return;
+    window.playerPickTarget = function(card, ci, mode) {
+      const s = _lastPlayerState; if (!s?.teams) return;
       document.getElementById('pg-pick-ov')?.remove();
-      const ov=document.createElement('div'); ov.id='pg-pick-ov';
-      ov.style.cssText='position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
-      let items='';
+      const ov = document.createElement('div'); ov.id = 'pg-pick-ov';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+      let items = '';
       if (mode==='player') {
-        s.teams.forEach((t,ti)=>(t.players||[]).forEach(p=>{
-          if(p.name===_playerName)return;
-          items+=`<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti},'${p.name.replace(/'/g,"&#39;")}',null)" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid ${t.color}66;border-radius:4px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:13px;margin-bottom:6px;touch-action:manipulation;"><span>${t.crest}</span><span>${p.name}</span><span style="font-size:10px;color:${t.color};margin-left:auto;">${t.name}</span></button>`;
+        s.teams.forEach((t,ti) => (t.players||[]).forEach(p => {
+          if (p.name===_playerName) return;
+          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti},'${p.name.replace(/'/g,"&#39;")}',null)" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid ${t.color}66;border-radius:4px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:13px;margin-bottom:6px;touch-action:manipulation;"><span>${t.crest}</span><span>${p.name}</span><span style="font-size:10px;color:${t.color};margin-left:auto;">${t.name}</span></button>`;
         }));
       } else {
-        s.teams.filter((_,i)=>i!==_playerTeamIdx).forEach(t=>{
+        s.teams.filter((_,i)=>i!==_playerTeamIdx).forEach(t => {
           const ti2=s.teams.indexOf(t);
-          items+=`<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti2},null,${ti2})" style="display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;border:1px solid ${t.color}66;border-radius:5px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:14px;margin-bottom:8px;touch-action:manipulation;"><span style="font-size:20px;">${t.crest}</span><span>${t.name}</span></button>`;
+          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti2},null,${ti2})" style="display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;border:1px solid ${t.color}66;border-radius:5px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:14px;margin-bottom:8px;touch-action:manipulation;"><span style="font-size:20px;">${t.crest}</span><span>${t.name}</span></button>`;
         });
       }
-      ov.innerHTML=`<div style="max-width:340px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:20px;max-height:80vh;overflow-y:auto;"><div style="font-family:Cinzel Decorative,serif;font-size:14px;color:#cc4444;text-align:center;margin-bottom:14px;">💀 Elige tu víctima</div>${items}<button onclick="document.getElementById('pg-pick-ov').remove()" style="width:100%;padding:9px;border:1px solid #8b6914;color:#8b6914;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:4px;">Cancelar</button></div>`;
-      ov.onclick=e=>{if(e.target===ov)ov.remove();};
+      ov.innerHTML = `<div style="max-width:340px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:20px;max-height:80vh;overflow-y:auto;"><div style="font-family:Cinzel Decorative,serif;font-size:14px;color:#cc4444;text-align:center;margin-bottom:14px;">💀 Elige tu víctima</div>${items}<button onclick="document.getElementById('pg-pick-ov').remove()" style="width:100%;padding:9px;border:1px solid #8b6914;color:#8b6914;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:4px;">Cancelar</button></div>`;
+      ov.onclick = e => { if(e.target===ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
-    window.playerSendAffliction = function(card,ci,targetTeamIdx,targetPlayerName,targetTeamOnly) {
+    window.playerSendAffliction = function(card, ci, targetTeamIdx, targetPlayerName, targetTeamOnly) {
       document.getElementById('pg-pick-ov')?.remove();
-      const myTeamName=_lastPlayerState?.teams?.[_playerTeamIdx]?.name||'';
-      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({card,cardIdx:ci,isTeamCard:!!card._src&&card._src==='team',playerName:_playerName,teamIdx:_playerTeamIdx,actionType:targetTeamOnly!==null?'afflict-team':'afflict-player',targetTeamIdx,targetPlayerName,ts:Date.now()});
+      const myTeamName = _lastPlayerState?.teams?.[_playerTeamIdx]?.name || '';
+      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({card, cardIdx:ci, isTeamCard:!!card._src&&card._src==='team', playerName:_playerName, teamIdx:_playerTeamIdx, actionType:targetTeamOnly!==null?'afflict-team':'afflict-player', targetTeamIdx, targetPlayerName, ts:Date.now()});
       if (targetPlayerName) {
         window.db?.ref('rooms/'+_playerRoom+'/playerNotifs/'+encodeURIComponent(targetPlayerName)).push({
-          type:'affliction',icon:card.icon||'💀',name:card.name,effect:card.effect||'',remaining:card.duration||'1 pregunta',from:_playerName,fromTeam:myTeamName,ts:Date.now()
+          type:'affliction', icon:card.icon||'💀', name:card.name, effect:card.effect||'', remaining:card.duration||'1 pregunta', from:_playerName, fromTeam:myTeamName, ts:Date.now()
         });
       }
       playerShowToast('💀 Aflixión enviada!');
     };
 
-    window.playerShowAfflDetail = function(name,effect,remaining,appliedBy) {
+    window.playerShowAfflDetail = function(name, effect, remaining, appliedBy) {
       document.getElementById('pg-affl-ov')?.remove();
-      const ov=document.createElement('div'); ov.id='pg-affl-ov';
-      ov.style.cssText='position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;';
-      ov.innerHTML=`<div style="max-width:300px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:22px;text-align:center;"><div style="font-size:42px;margin-bottom:8px;">💀</div><div style="font-family:Cinzel Decorative,serif;font-size:16px;color:#ff6666;margin-bottom:10px;">${name}</div><div style="font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.6;margin-bottom:12px;">${effect}</div><div style="font-family:Cinzel,serif;font-size:11px;color:#cc4444;">⏳ ${remaining}</div><div style="font-family:Cinzel,serif;font-size:10px;color:#8b6914;margin-top:6px;">Por: ${appliedBy||'?'}</div><button onclick="document.getElementById('pg-affl-ov').remove()" style="margin-top:16px;padding:10px;width:100%;border:1px solid #cc444466;color:#cc4444;background:transparent;font-family:Cinzel,serif;cursor:pointer;border-radius:4px;">Cerrar</button></div>`;
-      ov.onclick=e=>{if(e.target===ov)ov.remove();};
+      const ov = document.createElement('div'); ov.id = 'pg-affl-ov';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;';
+      ov.innerHTML = `<div style="max-width:300px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:22px;text-align:center;"><div style="font-size:42px;margin-bottom:8px;">💀</div><div style="font-family:Cinzel Decorative,serif;font-size:16px;color:#ff6666;margin-bottom:10px;">${name}</div><div style="font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.6;margin-bottom:12px;">${effect}</div><div style="font-family:Cinzel,serif;font-size:11px;color:#cc4444;">⏳ ${remaining}</div><div style="font-family:Cinzel,serif;font-size:10px;color:#8b6914;margin-top:6px;">Por: ${appliedBy||'?'}</div><button onclick="document.getElementById('pg-affl-ov').remove()" style="margin-top:16px;padding:10px;width:100%;border:1px solid #cc444466;color:#cc4444;background:transparent;font-family:Cinzel,serif;cursor:pointer;border-radius:4px;">Cerrar</button></div>`;
+      ov.onclick = e => { if(e.target===ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
     function playerShowToast(msg) {
-      const t=document.createElement('div'); t.textContent=msg;
-      t.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);border:1px solid var(--gold-dark);color:#f4e4bc;padding:10px 20px;border-radius:4px;font-family:IM Fell English,serif;font-size:13px;z-index:9999;white-space:nowrap;';
-      document.body.appendChild(t); setTimeout(()=>t.remove(),3000);
+      const t = document.createElement('div'); t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);border:1px solid var(--gold-dark);color:#f4e4bc;padding:10px 20px;border-radius:4px;font-family:IM Fell English,serif;font-size:13px;z-index:9999;white-space:nowrap;';
+      document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+    }
+
+    window.playerOpenCard = function(i) {
+      const card = window._myCards[i]; if (!card) return;
+      document.getElementById('pg-card-ov')?.remove();
+      const ov = document.createElement('div'); ov.id = 'pg-card-ov';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center;padding:20px;';
+      const TC = {bad:'#cc4444',good:'#44aa66',player:'#4488cc',dice:'#9966cc'};
+      const col = TC[card.type] || '#c9a227';
+      ov.innerHTML = `<div style="max-width:320px;width:100%;background:linear-gradient(160deg,#1e1005,#0d0500);border:2px solid ${col};border-radius:10px;padding:24px;text-align:center;">
+        <div style="font-size:56px;margin-bottom:8px;">${card.icon||'🃏'}</div>
+        <div style="font-family:Cinzel Decorative,serif;font-size:17px;color:${col};margin-bottom:8px;">${card.name}</div>
+        <div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:12px;font-family:IM Fell English,serif;font-size:14px;line-height:1.7;color:#f4e4bc;">${card.effect||''}</div>
+        <div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:16px;">Duración: ${card.duration||'—'}${card._src==='team'?' · Carta de equipo':''}</div>
+        <button onclick="playerUseCard(${i})" style="margin-bottom:8px;padding:13px 24px;background:linear-gradient(135deg,${col}33,${col}11);border:2px solid ${col};color:${col};font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;cursor:pointer;border-radius:5px;width:100%;display:block;touch-action:manipulation;">⚡ USAR CARTA</button>
+        <button onclick="document.getElementById('pg-card-ov').remove()" style="padding:9px 24px;border:1px solid ${col}44;color:${col}88;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:5px;width:100%;display:block;">Cerrar</button>
+      </div>`;
+      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      document.body.appendChild(ov);
+    };
+
+    window.playerUseCard = function(i) {
+      const card = window._myCards[i]; if (!card) return;
+      document.getElementById('pg-card-ov')?.remove();
+      if (card.isAffliction && card.afflictTarget === 'player') { playerPickTarget(card, i, 'player'); return; }
+      if (card.isAffliction && card.afflictTarget === 'team') { playerPickTarget(card, i, 'team'); return; }
+      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({
+        card, cardIdx:i, isTeamCard:card._src==='team', playerName:_playerName, teamIdx:_playerTeamIdx, actionType:'use', ts:Date.now()
+      });
+      playerShowToast('⚡ Carta enviada: '+card.name);
+    };
+
+    window.playerPickTarget = function(card, ci, mode) {
+      const s = _lastPlayerState; if (!s?.teams) return;
+      document.getElementById('pg-pick-ov')?.remove();
+      const ov = document.createElement('div'); ov.id = 'pg-pick-ov';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+      let items = '';
+      if (mode === 'player') {
+        s.teams.forEach((t,ti) => (t.players||[]).forEach(p => {
+          if (p.name === _playerName) return;
+          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti},'${p.name.replace(/'/g,"&#39;")}',null)" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid ${t.color}66;border-radius:4px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:13px;margin-bottom:6px;touch-action:manipulation;"><span>${t.crest}</span><span>${p.name}</span><span style="font-size:10px;color:${t.color};margin-left:auto;">${t.name}</span></button>`;
+        }));
+      } else {
+        s.teams.filter((_,i)=>i!==_playerTeamIdx).forEach(t => {
+          const ti2 = s.teams.indexOf(t);
+          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti2},null,${ti2})" style="display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;border:1px solid ${t.color}66;border-radius:5px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:14px;margin-bottom:8px;touch-action:manipulation;"><span style="font-size:20px;">${t.crest}</span><span>${t.name}</span></button>`;
+        });
+      }
+      ov.innerHTML = `<div style="max-width:340px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:20px;max-height:80vh;overflow-y:auto;"><div style="font-family:Cinzel Decorative,serif;font-size:14px;color:#cc4444;text-align:center;margin-bottom:14px;">💀 Elige tu víctima</div>${items}<button onclick="document.getElementById('pg-pick-ov').remove()" style="width:100%;padding:9px;border:1px solid #8b6914;color:#8b6914;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:4px;">Cancelar</button></div>`;
+      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      document.body.appendChild(ov);
+    };
+
+    window.playerSendAffliction = function(card, ci, targetTeamIdx, targetPlayerName, targetTeamOnly) {
+      document.getElementById('pg-pick-ov')?.remove();
+      const myTeamName = _lastPlayerState?.teams?.[_playerTeamIdx]?.name || '';
+      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({
+        card, cardIdx:ci, isTeamCard:!!card._src&&card._src==='team',
+        playerName:_playerName, teamIdx:_playerTeamIdx,
+        actionType: targetTeamOnly!==null ? 'afflict-team' : 'afflict-player',
+        targetTeamIdx, targetPlayerName, ts:Date.now()
+      });
+      if (targetPlayerName) {
+        window.db?.ref('rooms/'+_playerRoom+'/playerNotifs/'+encodeURIComponent(targetPlayerName)).push({
+          type:'affliction', icon:card.icon||'💀', name:card.name,
+          effect:card.effect||'', remaining:card.duration||'1 pregunta',
+          from:_playerName, fromTeam:myTeamName, ts:Date.now()
+        });
+      }
+      const targetName = targetPlayerName || (_lastPlayerState?.teams?.[targetTeamIdx]?.name)||'';
+      playerShowToast('💀 Aflixión enviada a '+targetName);
+    };
+
+    window.playerShowAfflDetail = function(name, effect, remaining, appliedBy) {
+      document.getElementById('pg-affl-ov')?.remove();
+      const ov = document.createElement('div'); ov.id = 'pg-affl-ov';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;';
+      ov.innerHTML = `<div style="max-width:300px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:22px;text-align:center;">
+        <div style="font-size:42px;margin-bottom:8px;">💀</div>
+        <div style="font-family:Cinzel Decorative,serif;font-size:16px;color:#ff6666;margin-bottom:10px;">${name}</div>
+        <div style="font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.6;margin-bottom:12px;">${effect}</div>
+        <div style="font-family:Cinzel,serif;font-size:11px;color:#cc4444;">⏳ ${remaining}</div>
+        <div style="font-family:Cinzel,serif;font-size:10px;color:#8b6914;margin-top:6px;">Por: ${appliedBy||'?'}</div>
+        <button onclick="document.getElementById('pg-affl-ov').remove()" style="margin-top:16px;padding:10px;width:100%;border:1px solid #cc444466;color:#cc4444;background:transparent;font-family:Cinzel,serif;cursor:pointer;border-radius:4px;">Cerrar</button>
+      </div>`;
+      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      document.body.appendChild(ov);
+    };
+
+
+    function showPlayerCardReceived(notif) {
+      document.getElementById('player-card-recv-ov')?.remove();
+      const ov = document.createElement('div'); ov.id = 'player-card-recv-ov';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:24px;';
+      const TC = {bad:'#cc4444',good:'#44aa66',player:'#4488cc',dice:'#9966cc'};
+      const col = TC[notif.type] || '#c9a227';
+      ov.innerHTML = `<div style="max-width:320px;width:100%;text-align:center;animation:cardRecvAnim .5s ease;">
+        <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:4px;color:${col};margin-bottom:14px;">⭐ ¡NUEVA CARTA! ⭐</div>
+        <div style="font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 20px ${col});">${notif.icon||'🃏'}</div>
+        <div style="font-family:Cinzel Decorative,serif;font-size:22px;color:${col};margin-bottom:10px;text-shadow:0 0 20px ${col}66;">${notif.name}</div>
+        <div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:16px;font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.7;">${notif.effect||''}</div>
+        <div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:20px;">Duración: ${notif.duration||'—'}</div>
+        <button onclick="document.getElementById('player-card-recv-ov').remove()"
+          style="padding:14px 32px;background:linear-gradient(180deg,${col},${col}88);border:none;border-radius:6px;color:#fff;font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;cursor:pointer;width:100%;">🎉 ¡ENTENDIDO!</button>
+      </div>
+      <style>@keyframes cardRecvAnim{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}</style>`;
+      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      document.body.appendChild(ov);
+      setTimeout(() => ov?.remove(), 15000);
     }
 
     function playerShowScreen(id) {
@@ -8083,81 +8253,70 @@ REGLAS ESTRICTAS:
 
 
 
-    // ================================================================
-    // ALL NEW FUNCTIONS
-    // ================================================================
+    // ==================== ACTIVE CARDS PANEL (host) ====================
+    function renderActiveCardsPanel() {
+      const el = document.getElementById('active-cards-panel');
+      if (!el || !GAME.teams) return;
+      const items = [];
+
+      GAME.teams.forEach((t, ti) => {
+        // Team afflictions
+        (t.afflictions || []).forEach(a => {
+          items.push({ icon:a.icon||'💀', text:`<strong style="color:${t.color}">${t.name}</strong> aflijido por <em>${a.name}</em>`, remaining:a.remaining||'?', appliedBy:a.appliedBy||'Host', color:'#ff8888', ti, afId:a.id, type:'team' });
+        });
+        // Team benefit cards
+        t.cards.filter(cd => cd.type === 'good' || cd.type === 'player').forEach(cd => {
+          items.push({ icon:cd.icon||'✨', text:`<strong style="color:${t.color}">${t.name}</strong> tiene <em>${cd.name}</em>`, remaining:cd.duration||'?', appliedBy:'Host', color:'#88ffaa', ti, type:'teamcard' });
+        });
+        // Player afflictions + cards
+        t.players.forEach((p, pi) => {
+          (p.afflictions || []).forEach(a => {
+            items.push({ icon:a.icon||'💀', text:`<strong style="color:${t.color}">${p.name}</strong> aflijido por <em>${a.name}</em>`, remaining:a.remaining||'?', appliedBy:a.appliedBy||'?', color:'#ff8888', ti, pi, afId:a.id, type:'player' });
+          });
+          (p.cards || []).filter(cd => cd.type !== 'bad').forEach(cd => {
+            items.push({ icon:cd.icon||'✨', text:`<strong style="color:${t.color}">${p.name}</strong> tiene <em>${cd.name}</em>`, remaining:cd.duration||'?', appliedBy:'Host', color:'#aaccff', ti, pi, type:'playercard' });
+          });
+        });
+      });
+
+      if (!items.length) { el.innerHTML = '<div style="font-style:italic;">Sin cartas activas</div>'; return; }
+
+      el.innerHTML = items.map(item => `
+        <div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(201,162,39,.08);">
+          <span style="font-size:14px;flex-shrink:0;">${item.icon}</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:11px;line-height:1.4;">${item.text}</div>
+            <div style="font-family:Cinzel,serif;font-size:8px;color:${item.color};margin-top:1px;">⏳ ${item.remaining} · por ${item.appliedBy}</div>
+          </div>
+          ${(item.type==='team'||item.type==='player') ? `<button onclick="removeActiveCard('${item.type}',${item.ti},${item.pi||0},${item.afId})" style="padding:2px 6px;border:1px solid #cc4444;color:#cc4444;background:transparent;font-size:9px;cursor:pointer;border-radius:2px;flex-shrink:0;font-family:Cinzel,serif;">✕</button>` : ''}
+        </div>`).join('');
+    }
+
+    function removeActiveCard(type, ti, pi, afId) {
+      if (type === 'team') {
+        GAME.teams[ti].afflictions = (GAME.teams[ti].afflictions||[]).filter(a => String(a.id) !== String(afId));
+      } else if (type === 'player') {
+        GAME.teams[ti].players[pi].afflictions = (GAME.teams[ti].players[pi].afflictions||[]).filter(a => String(a.id) !== String(afId));
+      }
+      renderActiveCardsPanel(); broadcastToTV(); saveGameState();
+    }
+
+    // ==================== BUZZ + MANUAL PTS + HINT + AUDIO ====================
     let _buzzEnabled = false;
 
-    // === ANSWER TOOLTIP ===
-    function showAnswerTooltip() {
-      const q = GAME.questionQueue?.[GAME.currentQIndex]; if (!q) return;
-      const tt = document.getElementById('answer-tooltip');
-      const ttText = document.getElementById('answer-tooltip-text');
-      if (!tt || !ttText) return;
-      const type = document.getElementById('q-type')?.value || '';
-      let ans = q.correcta || '(sin respuesta)';
-      if (type === 'order' && q._correctOrder) ans = q._correctOrder.map((it,i) => (i+1)+'° '+it).join(' → ');
-      if (type === 'matching' && q._correctPares) ans = q._correctPares.map(p => p.l+' → '+p.r).join(' | ');
-      ttText.textContent = ans; tt.style.display = 'block';
-    }
-    function hideAnswerTooltip() {
-      const tt = document.getElementById('answer-tooltip'); if (tt) tt.style.display = 'none';
-    }
-
-    // === HINT (complete sentences) ===
-    async function generateHint() {
-      const q = GAME.questionQueue?.[GAME.currentQIndex];
-      const key = localStorage.getItem('gemini_api_key');
-      if (!q) { showToast('No hay pregunta activa'); return; }
-      if (!key) { showToast('Falta API key'); return; }
-      const btn = document.getElementById('hint-btn');
-      const hintSection = document.getElementById('hint-section');
-      const hintText = document.getElementById('hint-text');
-      if (btn) { btn.textContent = '💡 Generando...'; btn.disabled = true; }
-      if (hintSection) hintSection.style.display = 'block';
-      if (hintText) hintText.textContent = '⏳ Generando pista...';
-      try {
-        const model = localStorage.getItem('gemini_model') || 'gemini-2.0-flash';
-        const prompt = 'Eres ayudante de trivia. Da UNA pista INDIRECTA sobre este tema, sin mencionar la respuesta ni palabras similares a ella. Escribe 2 oraciones completas que den contexto histerico, cientifico o cultural util. Nunca uses elipsis ni dejes oraciones sin terminar. Pregunta: ' + JSON.stringify(q.pregunta) + ' Respuesta (NO decir nunca): ' + JSON.stringify(q.correcta) + '. Tu pista (2 oraciones completas):';
-        const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key, {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{maxOutputTokens:300, temperature:0.7}})
-        });
-        const data = await r.json();
-        const hint = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'No se pudo generar la pista.';
-        if (hintText) hintText.textContent = hint;
-        if (typeof pushNotif==='function') pushNotif('💡', '<em>Pista generada</em>');
-        if (window.db) window.db.ref('rooms/' + TV_ROOM_CODE + '/hint').set({text: hint, ts: Date.now()});
-      } catch(e) {
-        if (hintText) hintText.textContent = 'Error al generar pista.';
-      }
-      if (btn) { btn.textContent = '💡 Pista'; btn.disabled = false; }
-    }
-
-    // === AUDIO ===
-    function playAudioClip() {
-      const inp = document.getElementById('audio-url-input');
-      const url = inp?.value?.trim(); if (!url) { showToast('Pega una URL de YouTube'); return; }
-      const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
-      if (!m) { showToast('URL no reconocida'); return; }
-      const videoId = m[1]; const tM = url.match(/[?&]t=(\d+)/); const start = tM ? tM[1] : '0';
-      const wrap = document.getElementById('audio-player-wrap'); const iframe = document.getElementById('yt-iframe');
-      if (wrap && iframe) { wrap.style.display='block'; iframe.src='https://www.youtube.com/embed/'+videoId+'?autoplay=1&start='+start+'&rel=0'; }
-      if (window.db) window.db.ref('rooms/'+TV_ROOM_CODE+'/audioClip').set({videoId, start, ts:Date.now()});
-    }
-
-    // === BUZZ ENABLE ===
     function enableBuzzForSelected() {
       _buzzEnabled = true;
       const btn = document.getElementById('enable-buzz-btn');
-      if (btn) { btn.textContent = '⏳ Esperando timbre...'; btn.style.opacity = '0.8'; }
+      if (btn) { btn.textContent = '⏳ Esperando...'; btn.style.opacity = '0.8'; }
       if (window.db) window.db.ref('rooms/' + TV_ROOM_CODE + '/firstBuzz').remove();
       broadcastToTV(); showToast('🔔 ¡Botón activo!', 3000);
+
       if (window.db) {
         let done = false;
         const ref = window.db.ref('rooms/' + TV_ROOM_CODE + '/firstBuzz');
         const handler = ref.on('value', snap => {
-          const bz = snap.val(); if (!bz || !bz.jugador || done) return;
+          const bz = snap.val();
+          if (!bz || !bz.jugador || done) return;
           done = true; ref.off('value', handler);
           _buzzEnabled = false; broadcastToTV();
           const teamName = GAME.teams[bz.equipo]?.name || '';
@@ -8165,14 +8324,11 @@ REGLAS ESTRICTAS:
           showToast('🔔 ¡' + bz.jugador + ' (' + teamName + ') timbró primero!', 8000);
           if (typeof pushNotif==='function') pushNotif('🔔', '<strong>'+bz.jugador+'</strong> timbró primero — '+teamName);
           const btn2 = document.getElementById('enable-buzz-btn');
-          if (btn2) { btn2.textContent='🔔 Habilitar Botón para Seleccionados'; btn2.style.opacity='1'; }
+          if (btn2) { btn2.textContent = '🔔 Habilitar Botón para Seleccionados'; btn2.style.opacity='1'; }
         });
         setTimeout(() => {
-          if (!done) {
-            ref.off('value', handler); _buzzEnabled = false; broadcastToTV();
-            const btn2 = document.getElementById('enable-buzz-btn');
-            if (btn2) { btn2.textContent='🔔 Habilitar Botón para Seleccionados'; btn2.style.opacity='1'; }
-          }
+          if (!done) { ref.off('value', handler); _buzzEnabled=false; broadcastToTV();
+            const btn2=document.getElementById('enable-buzz-btn'); if(btn2){btn2.textContent='🔔 Habilitar Botón para Seleccionados';btn2.style.opacity='1';} }
         }, 30000);
       }
     }
@@ -8181,26 +8337,78 @@ REGLAS ESTRICTAS:
       document.getElementById('buzz-winner-banner')?.remove();
       const div = document.createElement('div'); div.id = 'buzz-winner-banner';
       div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:600;background:rgba(0,0,0,.92);border:3px solid '+color+';border-radius:12px;padding:24px 40px;text-align:center;pointer-events:none;animation:buzzWinAnim .4s ease;';
-      div.innerHTML = '<div style="font-family:Cinzel Decorative,serif;font-size:12px;letter-spacing:4px;color:'+color+';margin-bottom:8px;">⚡ TIMBRÓ PRIMERO ⚡</div><div style="font-family:Cinzel Decorative,serif;font-size:28px;color:#fff;text-shadow:0 0 30px '+color+';margin-bottom:6px;">'+name+'</div><div style="font-family:Cinzel,serif;font-size:13px;color:'+color+';">'+teamName+'</div>';
+      div.innerHTML = '<div style="font-family:Cinzel Decorative,serif;font-size:12px;letter-spacing:4px;color:'+color+';margin-bottom:8px;text-shadow:0 0 20px '+color+'">⚡ TIMBRÓ PRIMERO ⚡</div><div style="font-family:Cinzel Decorative,serif;font-size:28px;color:#fff;text-shadow:0 0 30px '+color+',0 0 60px '+color+';margin-bottom:6px;">'+name+'</div><div style="font-family:Cinzel,serif;font-size:13px;color:'+color+';">'+teamName+'</div>';
       document.body.appendChild(div);
       setTimeout(() => div?.remove(), 6000);
-      if (!document.getElementById('bwas')) { const s=document.createElement('style');s.id='bwas';s.textContent='@keyframes buzzWinAnim{0%{transform:translate(-50%,-50%) scale(0.5);opacity:0}70%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}';document.head.appendChild(s); }
+      if (!document.getElementById('bwa-style')) { const s=document.createElement('style');s.id='bwa-style';s.textContent='@keyframes buzzWinAnim{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}70%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}';document.head.appendChild(s); }
     }
 
-    // === SCORE ADJUST ===
+    async function generateHint() {
+      const q = GAME.questionQueue?.[GAME.currentQIndex];
+      const key = localStorage.getItem('gemini_api_key');
+      if (!q) { showToast('No hay pregunta activa'); return; }
+      if (!key) { showToast('Falta API key'); return; }
+      const btn = document.getElementById('hint-btn');
+      const hintSection = document.getElementById('hint-section');
+      const hintText = document.getElementById('hint-text');
+      if (btn) { btn.textContent = '💡...'; btn.disabled = true; }
+      if (hintSection) hintSection.style.display = 'block';
+      if (hintText) hintText.textContent = 'Generando pista...';
+      try {
+        const model = localStorage.getItem('gemini_model') || 'gemini-2.5-flash';
+        const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({contents:[{parts:[{text:'Genera UNA pista indirecta para esta pregunta de trivia. La pista NO debe mencionar la respuesta ni ningún sinónimo directo. Da contexto útil. Sé 1-2 oraciones completas y claras. No empieces con "La pista es". Pregunta: "' + q.pregunta + '" Respuesta correcta (NUNCA mencionar): "' + q.correcta + '". Escribe directamente la pista:'}]}], generationConfig:{maxOutputTokens:350, temperature:0.7}})
+        });
+        const data = await r.json();
+        const hint = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'No disponible';
+        if (hintText) hintText.textContent = hint;
+        if (typeof pushNotif==='function') pushNotif('💡', '<em>Pista:</em> '+hint);
+        if (window.db) window.db.ref('rooms/'+TV_ROOM_CODE+'/hint').set({text:hint, ts:Date.now()});
+      } catch(e) { if (hintText) hintText.textContent = 'Error: ' + e.message; }
+      if (btn) { btn.textContent = '💡 Pista'; btn.disabled = false; }
+    }
+
+    function showAnswerTooltip() {
+      const q = GAME.questionQueue?.[GAME.currentQIndex]; if (!q) return;
+      const tt = document.getElementById('answer-tooltip');
+      const ttText = document.getElementById('answer-tooltip-text');
+      if (!tt || !ttText) return;
+      const type = document.getElementById('q-type')?.value || '';
+      let answerText = q.correcta || '(sin respuesta)';
+      if (type === 'order' && q._correctOrder) answerText = q._correctOrder.map((it,i)=>(i+1)+'° '+it).join(' → ');
+      else if (type === 'matching' && q._correctPares) answerText = q._correctPares.map(p=>p.l+' → '+p.r).join(' | ');
+      ttText.textContent = answerText;
+      tt.style.display = 'block';
+    }
+    function hideAnswerTooltip() {
+      const tt = document.getElementById('answer-tooltip'); if (tt) tt.style.display = 'none';
+    }
+
+    function playAudioClip() {
+      const inp = document.getElementById('audio-url-input');
+      const url = inp?.value?.trim(); if (!url) { showToast('Pega una URL de YouTube'); return; }
+      const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+      if (!m) { showToast('URL no reconocida'); return; }
+      const videoId=m[1]; const tM=url.match(/[?&]t=(\d+)/); const start=tM?tM[1]:'0';
+      const wrap=document.getElementById('audio-player-wrap'); const iframe=document.getElementById('yt-iframe');
+      if (wrap&&iframe){wrap.style.display='block';iframe.src='https://www.youtube.com/embed/'+videoId+'?autoplay=1&start='+start+'&rel=0';}
+      if (window.db) window.db.ref('rooms/'+TV_ROOM_CODE+'/audioClip').set({videoId,start,ts:Date.now()});
+    }
+
     function adjustScore(ti, pts) {
       if (!GAME.teams?.[ti]) return;
       GAME.teams[ti].score = Math.max(0, (GAME.teams[ti].score||0) + pts);
       renderScoreboard(); broadcastToTV(); saveGameState();
       showToast(GAME.teams[ti].name + ': ' + (pts>0?'+':'') + pts + ' pt');
-      if (typeof pushNotif==='function') pushNotif('⚡', '<strong>'+GAME.teams[ti].name+'</strong> '+(pts>0?'+':'')+pts+'pt');
+      if (typeof pushNotif==='function') pushNotif('⚡','<strong>'+GAME.teams[ti].name+'</strong> '+(pts>0?'+':'')+pts+'pt');
     }
 
-    // === PLAYER JOINS (host listens) ===
     function startListeningForPlayerJoins() {
       if (!window.db || !TV_ROOM_CODE) return;
       window.db.ref('rooms/'+TV_ROOM_CODE+'/playerJoins').on('child_added', teamSnap => {
-        const ti = parseInt(teamSnap.key); if (!GAME.teams?.[ti]) return;
+        const ti = parseInt(teamSnap.key);
+        if (!GAME.teams?.[ti]) return;
         teamSnap.forEach(playerSnap => {
           const data = playerSnap.val(); if (!data?.name) return;
           const team = GAME.teams[ti];
@@ -8209,7 +8417,7 @@ REGLAS ESTRICTAS:
           if (phIdx>=0) { team.players[phIdx].name=data.name; }
           else { team.players.push({name:data.name,correct:0,cards:[],afflictions:[]}); }
           renderScoreboard(); renderParticipantSelector(); renderTeamBuzzerBtns();
-          broadcastToTV(); saveGameState();
+          renderInventoryModal(); broadcastToTV(); saveGameState();
           if (typeof pushNotif==='function') pushNotif('👤','<strong>'+data.name+'</strong> ingresó a <strong>'+team.name+'</strong>');
           showToast('👤 '+data.name+' se unió a '+team.name, 4000);
           if (document.getElementById('players-dashboard-content')) renderPlayersDashboard();
@@ -8217,7 +8425,9 @@ REGLAS ESTRICTAS:
       });
 
       window.db.ref('rooms/'+TV_ROOM_CODE+'/cardActions').on('child_added', snap => {
-        const action = snap.val(); if (!action || Date.now()-action.ts>60000) return; snap.ref.remove();
+        const action = snap.val();
+        if (!action || Date.now()-action.ts > 60000) return;
+        snap.ref.remove();
         const srcTeam = GAME.teams[action.teamIdx]; if (!srcTeam) return;
         const player = srcTeam.players.find(p=>p.name===action.playerName);
 
@@ -8225,9 +8435,8 @@ REGLAS ESTRICTAS:
           srcTeam.cards.push({...action.card});
           executeCardEffect(action.teamIdx, srcTeam.cards.length-1);
           if (player?.cards) player.cards=player.cards.filter((_,i)=>i!==action.cardIdx);
-          renderTeamCards(); updateInventoryBadge();
-          if (_invSidebarOpen) renderInventoryModal();
-          renderActiveCardEffects(); broadcastToTV(); saveGameState();
+          renderTeamCards(); updateInventoryBadge(); renderInventoryModal();
+          renderActiveCardsPanel(); broadcastToTV(); saveGameState();
           if (typeof pushNotif==='function') pushNotif(action.card.icon||'🃏','<strong>'+action.playerName+'</strong> usó <em>'+action.card.name+'</em>');
 
         } else if (action.actionType==='afflict-player') {
@@ -8235,48 +8444,63 @@ REGLAS ESTRICTAS:
           const tgtPlayer=tgtTeam?.players.find(p=>p.name===action.targetPlayerName);
           if (tgtPlayer) {
             tgtPlayer.afflictions=tgtPlayer.afflictions||[];
-            tgtPlayer.afflictions.push({id:Date.now(),icon:action.card.icon||'💀',name:action.card.name,effect:action.card.effect,remaining:action.card.duration||'1 pregunta',appliedBy:action.playerName,appliedByTeam:srcTeam.name});
+            const affl={id:Date.now(),icon:action.card.icon||'💀',name:action.card.name,effect:action.card.effect,remaining:action.card.duration||'1 pregunta',appliedBy:action.playerName,appliedByTeam:srcTeam.name};
+            tgtPlayer.afflictions.push(affl);
             if (player?.cards) player.cards=player.cards.filter((_,i)=>i!==action.cardIdx);
             else srcTeam.cards=srcTeam.cards.filter((_,i)=>i!==action.cardIdx);
-            renderActiveCardEffects(); broadcastToTV(); saveGameState();
+            renderInventoryModal(); renderActiveCardsPanel(); broadcastToTV(); saveGameState();
             if (typeof pushNotif==='function') pushNotif('💀','<strong>'+action.playerName+'</strong> afligió a <strong>'+action.targetPlayerName+'</strong>: <em>'+action.card.name+'</em>');
           }
-
         } else if (action.actionType==='afflict-team') {
           const tgtTeam=GAME.teams[action.targetTeamIdx];
           if (tgtTeam) {
             tgtTeam.afflictions=tgtTeam.afflictions||[];
-            tgtTeam.afflictions.push({id:Date.now(),icon:action.card.icon||'💀',name:action.card.name,effect:action.card.effect,remaining:action.card.duration||'1 pregunta',appliedBy:action.playerName,appliedByTeam:srcTeam.name});
+            const affl={id:Date.now(),icon:action.card.icon||'💀',name:action.card.name,effect:action.card.effect,remaining:action.card.duration||'1 pregunta',appliedBy:action.playerName,appliedByTeam:srcTeam.name};
+            tgtTeam.afflictions.push(affl);
             if (player?.cards) player.cards=player.cards.filter((_,i)=>i!==action.cardIdx);
             else srcTeam.cards=srcTeam.cards.filter((_,i)=>i!==action.cardIdx);
-            renderActiveCardEffects(); broadcastToTV(); saveGameState();
-            if (typeof pushNotif==='function') pushNotif('💀','<strong>'+action.playerName+'</strong> afligió a <strong>'+tgtTeam.name+'</strong>: <em>'+action.card.name+'</em>');
+            renderInventoryModal(); renderActiveCardsPanel(); broadcastToTV(); saveGameState();
+            if (typeof pushNotif==='function') pushNotif('💀','<strong>'+action.playerName+'</strong> afligió al equipo <strong>'+tgtTeam.name+'</strong>: <em>'+action.card.name+'</em>');
           }
         }
       });
     }
 
-    // === DELETE / REMOVE AFFLICTION ===
     function deletePlayerFromTeam(ti, pi) {
       const team=GAME.teams[ti]; if(!team?.players[pi]) return;
       const name=team.players[pi].name; if(!confirm('¿Eliminar a '+name+'?')) return;
       team.players.splice(pi,1); renderScoreboard(); broadcastToTV(); saveGameState();
-      if (document.getElementById('players-dashboard-content')) renderPlayersDashboard();
-      if (window.db) window.db.ref('rooms/'+TV_ROOM_CODE+'/players/'+ti+'/'+encodeURIComponent(name)).remove();
+      if(document.getElementById('players-dashboard-content')) renderPlayersDashboard();
+      if(window.db) window.db.ref('rooms/'+TV_ROOM_CODE+'/players/'+ti+'/'+encodeURIComponent(name)).remove();
       showToast('🗑 '+name+' eliminado');
     }
     function removeAfflictionFromPlayer(ti, pi, afId) {
       const p=GAME.teams[ti]?.players[pi]; if(!p) return;
       p.afflictions=(p.afflictions||[]).filter(a=>String(a.id)!==String(afId));
-      renderActiveCardEffects(); broadcastToTV(); saveGameState();
-      if (document.getElementById('players-dashboard-content')) renderPlayersDashboard();
+      renderActiveCardsPanel(); broadcastToTV(); saveGameState();
+      if(document.getElementById('players-dashboard-content')) renderPlayersDashboard();
       showToast('✅ Aflixión removida');
     }
     function removeAfflictionFromTeam(ti, afId) {
       const t=GAME.teams[ti]; if(!t) return;
       t.afflictions=(t.afflictions||[]).filter(a=>String(a.id)!==String(afId));
-      renderActiveCardEffects(); broadcastToTV(); saveGameState(); showToast('✅ Aflixión removida');
+      renderActiveCardsPanel(); broadcastToTV(); saveGameState(); showToast('✅ Aflixión de equipo removida');
     }
+
+    // getActivePts with double detection
+    function getActivePts_override() {} // placeholder — actual override below
+
+
+    
+    // ==================== BUZZ + HINT + AUDIO + PLAYER SYNC ====================
+            
+
+
+
+
+
+
+
 
 
         // ==================== INIT ====================
