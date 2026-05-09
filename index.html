@@ -4117,6 +4117,15 @@
           </div>
           <div class="dice-result-text" id="dice-result-text">Selecciona un jugador y habilita el dado</div>
         </div>
+        <!-- ACTIVE CARDS PANEL (HOST) -->
+        <div class="gothic-panel" style="padding:16px; margin-bottom:12px;">
+          <div class="section-title" style="font-size:9px; letter-spacing:3px; margin-bottom:12px; color:#cc4444;">⚡
+            Efectos y Cartas Activas ⚡
+          </div>
+          <div id="active-cards-panel">
+            <div style="font-style:italic;color:var(--gold-dark);font-size:12px;">Sin cartas activas</div>
+          </div>
+        </div>
 
         <!-- CARD DRAW ZONE -->
         <div class="gothic-panel" style="padding:16px; margin-bottom:12px;">
@@ -5308,13 +5317,8 @@
             setTimeout(() => {
               const card = randomCard('player');
               if (card) {
-                showCardReveal(card, 'player', capturedTi, capturedPi);
-                showToast(`⭐ ${team.players[capturedPi].name} — ${team.players[capturedPi].correct} correctas. ¡Carta!`, 4000);
-                if (window.db && TV_ROOM_CODE) {
-                  window.db.ref('rooms/' + TV_ROOM_CODE + '/playerNotifs/' + encodeURIComponent(team.players[capturedPi].name)).push({
-                    type: 'card_received', icon: card.icon || '🃏', name: card.name, effect: card.effect || '', duration: card.duration || '', ts: Date.now()
-                  });
-                }
+                assignCardToPlayer(card, 'player', capturedTi, capturedPi);
+                if (typeof pushNotif === 'function') pushNotif(card.icon || '🃏', `⭐ Carta ${card.name} asignada a ${team.players[capturedPi].name}`);
               }
             }, 600);
           }
@@ -5828,14 +5832,14 @@
 
         // Team card chips
         const teamCardHtml = teamCards.length > 0
-          ? teamCards.map((c, ci) => cardChip(c, `removeTeamCard(${ti},${ci})`)).join('')
+          ? teamCards.map((c, ci) => cardChip(c, `executeTeamCard(${ti},${ci})`)).join('')
           : '<span style="font-family:\'IM Fell English\',serif;font-size:12px;color:var(--gold-dark);font-style:italic;">Sin cartas de equipo</span>';
 
         // Player rows
         const playersHtml = (t.players || []).map((p, pi) => {
           const pCards = p.cards || [];
           const pChips = pCards.length > 0
-            ? pCards.map((c, ci) => cardChip(c, `removePlayerCard(${ti},${pi},${ci})`)).join('')
+            ? pCards.map((c, ci) => cardChip(c, `executePlayerCard(${ti},${pi},${ci})`)).join('')
             : '<span style="font-family:\'IM Fell English\',serif;font-size:11px;color:var(--gold-dark);font-style:italic;opacity:.6;">Sin cartas</span>';
 
           return `<div class="inv-player-row">
@@ -6646,6 +6650,7 @@
         image: '"opciones":["A: op1","B: op2","C: op3","D: op4"],"correcta":"A","imageSearch":"exact English Wikipedia title of the IMAGE shown (the painting/flag/place/object, NOT the person)"',
         audio: '"correcta":"respuesta"',
         chain: '"correcta":"respuesta"',
+        song: '"pregunta":"Nombre de la cancion y artista. Minuto exacto del coro (Ej: 1:20 a 1:35) para pausar justo antes de la palabra clave","correcta":"frase exacta a completar"'
       };
 
       let prompt = '';
@@ -7706,13 +7711,13 @@ REGLAS ESTRICTAS:
       // --- NORMAL ---
       if (s.revealed) {
         if (s.category) html += `<div class="tv-category" style="font-size:clamp(12px,1.5vw,18px);margin-bottom:12px;">${s.category.toUpperCase()}</div>`;
-        if (s.imageUrl) html += `<img class="tv-image" src="${s.imageUrl}" alt="" style="animation:tvPopIn 0.5s ease-out;">`;
-        if (s.question) html += `<div class="tv-question-text" style="animation:tvPopIn 0.5s ease-out;">${s.question}</div>`;
+        if (s.imageUrl) html += `<img class="tv-image" src="${s.imageUrl}" alt="">`;
+        if (s.question) html += `<div class="tv-question-text">${s.question}</div>`;
 
         if (s.opciones && s.opciones.length > 0) {
           const singleCol = s.type === 'order' || s.type === 'matching';
           const cols = singleCol ? '1fr' : '1fr 1fr';
-          html += `<div style="display:grid;grid-template-columns:${cols};gap:8px;width:min(820px,70vw);animation:tvPopIn 0.6s ease-out;">` +
+          html += `<div style="display:grid;grid-template-columns:${cols};gap:8px;width:min(820px,70vw);">` +
             s.opciones.map(o => `
           <div class="tv-option">
             <span class="tv-opt-letter">${o.letter}</span>
@@ -7721,17 +7726,17 @@ REGLAS ESTRICTAS:
             '</div>';
         }
 
-        html += `<div class="tv-revealed" style="margin-top:20px;animation:tvSlideUp 0.5s ease-out;">${s.revealed}</div>`;
+        html += `<div class="tv-revealed" style="margin-top:20px;">${s.revealed}</div>`;
       } else if (s.question) {
         // Question revealed but answer NOT revealed
         if (s.category) html += `<div class="tv-category" style="font-size:clamp(12px,1.5vw,18px);margin-bottom:12px;">${s.category.toUpperCase()}</div>`;
-        if (s.imageUrl) html += `<img class="tv-image" src="${s.imageUrl}" alt="" style="animation:tvPopIn 0.5s ease-out;">`;
-        html += `<div class="tv-question-text" style="animation:tvPopIn 0.5s ease-out;">${s.question}</div>`;
+        if (s.imageUrl) html += `<img class="tv-image" src="${s.imageUrl}" alt="">`;
+        html += `<div class="tv-question-text">${s.question}</div>`;
 
         if (s.opciones && s.opciones.length > 0) {
           const singleCol = s.type === 'order' || s.type === 'matching';
           const cols = singleCol ? '1fr' : '1fr 1fr';
-          html += `<div style="display:grid;grid-template-columns:${cols};gap:8px;width:min(820px,70vw);animation:tvPopIn 0.6s ease-out;">` +
+          html += `<div style="display:grid;grid-template-columns:${cols};gap:8px;width:min(820px,70vw);">` +
             s.opciones.map(o => `
           <div class="tv-option">
             <span class="tv-opt-letter">${o.letter}</span>
@@ -7766,6 +7771,20 @@ REGLAS ESTRICTAS:
         window.db.ref('rooms/' + _tvRoom + '/state').on('value', snap => {
           const s = snap.val();
           if (s) _renderTVState(s);
+        });
+        window.db.ref('rooms/' + _tvRoom + '/diceRoll').on('value', snap => {
+          const val = snap.val();
+          if (!val) return;
+          const center = document.querySelector('.tv-center');
+          if (!center) return;
+          if (val.rolling) {
+            center.innerHTML = '<div style="font-size:120px;animation:tvPulseQ 0.3s ease-in-out infinite;">🎲</div>';
+          } else if (val.result !== undefined) {
+            center.innerHTML = `<div style="text-align:center;">
+              <div style="font-family:Cinzel Decorative,serif;font-size:150px;color:${val.resultColor};text-shadow:0 0 50px ${val.resultColor};">${val.result}</div>
+              <div style="font-family:Cinzel,serif;font-size:30px;color:${val.resultColor};margin-top:20px;">${val.resultMsg}</div>
+            </div>`;
+          }
         });
       }
     }
