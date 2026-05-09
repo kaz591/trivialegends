@@ -3937,6 +3937,7 @@
               <option value="mime">Mímica / Actuación</option>
               <option value="audio">Audio / Sonido</option>
               <option value="chain">Cadena de Palabras</option>
+              <option value="song">🎵 Completa la Canción</option>
             </select>
             <button class="btn btn-ghost btn-sm q-ai-btn" id="reveal-type-btn" onclick="revealRandomType()"
               style="display:none;">
@@ -3981,16 +3982,21 @@
               placeholder="Escribe la pregunta aquí, o usa 🔮 IA para generar una..." oninput="autoResizeTextarea(this)"
               style="overflow:hidden; resize:none; min-height:60px; flex:1;"></textarea>
             <button type="button" id="hint-btn" onclick="generateHint()" title="Pista con IA"
-              style="flex-shrink:0;padding:7px 10px;border:1px solid #9966cc;color:#9966cc;background:rgba(80,40,120,.15);font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:2px;white-space:nowrap;">💡 Pista</button>
+              style="flex-shrink:0;padding:7px 10px;border:1px solid #9966cc;color:#9966cc;background:rgba(80,40,120,.15);font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:2px;white-space:nowrap;">💡
+              Pista</button>
           </div>
 
           <!-- Dynamic answer area (rendered by type) -->
           <div id="q-answers-area"></div>
 
           <!-- Hint section -->
-          <div id="hint-section" style="display:none;margin:6px 0;padding:10px 14px;background:rgba(100,50,150,.12);border:1px solid rgba(150,80,200,.35);border-radius:5px;">
-            <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#9966cc;margin-bottom:5px;">💡 PISTA (solo tú la ves)</div>
-            <div id="hint-text" style="font-family:IM Fell English,serif;font-size:13px;color:#d4b8f0;line-height:1.6;font-style:italic;"></div>
+          <div id="hint-section"
+            style="display:none;margin:6px 0;padding:10px 14px;background:rgba(100,50,150,.12);border:1px solid rgba(150,80,200,.35);border-radius:5px;">
+            <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#9966cc;margin-bottom:5px;">💡
+              PISTA (solo tú la ves)</div>
+            <div id="hint-text"
+              style="font-family:IM Fell English,serif;font-size:13px;color:#d4b8f0;line-height:1.6;font-style:italic;">
+            </div>
           </div>
           <!-- Reveal Answer with tooltip -->
           <div style="position:relative;width:100%;">
@@ -3998,8 +4004,10 @@
               onmouseenter="showAnswerTooltip()" onmouseleave="hideAnswerTooltip()">
               👁 Mostrar Respuesta
             </button>
-            <div id="answer-tooltip" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.95);border:1px solid var(--gold-dark);border-radius:6px;padding:10px 14px;font-family:IM Fell English,serif;font-size:13px;color:#8acc60;min-width:200px;max-width:320px;white-space:normal;z-index:200;box-shadow:0 -4px 16px rgba(0,0,0,.6);text-align:center;pointer-events:none;">
-              <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#6aaa60;margin-bottom:5px;">RESPUESTA (solo tú ves esto)</div>
+            <div id="answer-tooltip"
+              style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.95);border:1px solid var(--gold-dark);border-radius:6px;padding:10px 14px;font-family:IM Fell English,serif;font-size:13px;color:#8acc60;min-width:200px;max-width:320px;white-space:normal;z-index:200;box-shadow:0 -4px 16px rgba(0,0,0,.6);text-align:center;pointer-events:none;">
+              <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#6aaa60;margin-bottom:5px;">
+                RESPUESTA (solo tú ves esto)</div>
               <div id="answer-tooltip-text"></div>
             </div>
           </div>
@@ -4040,7 +4048,8 @@
             style="padding:9px 14px;background:linear-gradient(135deg,#1a5c1a,#0d3d0d);border:2px solid #2ecc71;color:#2ecc71;font-family:Cinzel,serif;font-size:11px;cursor:pointer;border-radius:4px;width:100%;margin-bottom:5px;">
             🔔 Habilitar Botón para Seleccionados
           </button>
-          <div style="font-family:IM Fell English,serif;font-size:10px;color:var(--gold-dark);font-style:italic;">El primero en timbrar tiene la palabra</div>
+          <div style="font-family:IM Fell English,serif;font-size:10px;color:var(--gold-dark);font-style:italic;">El
+            primero en timbrar tiene la palabra</div>
         </div>
 
         <!-- BUZZER TEAM SELECTOR — host picks which team rang -->
@@ -5092,8 +5101,8 @@
       _buzzEnabled = false;
       // Clear Firebase from previous game
       if (window.db && TV_ROOM_CODE) {
-        ['players','playerJoins','firstBuzz','cardActions','playerNotifs','acciones','diceRoll'].forEach(k => {
-          window.db.ref('rooms/'+TV_ROOM_CODE+'/'+k).remove();
+        ['players', 'playerJoins', 'firstBuzz', 'cardActions', 'playerNotifs', 'acciones', 'diceRoll'].forEach(k => {
+          window.db.ref('rooms/' + TV_ROOM_CODE + '/' + k).remove();
         });
       }
       showScreen('game');
@@ -5228,13 +5237,13 @@
     function getActivePts() {
       const diff = parseInt(document.getElementById('q-diff')?.value || '1');
       const ti = GAME.activeBuzzerTeam;
-      const team = (ti!==null&&ti!==undefined) ? GAME.teams[ti] : null;
+      const team = (ti !== null && ti !== undefined) ? GAME.teams[ti] : null;
       let mult = 1;
       if (team) {
         const has2x = team.cards.some(cd =>
-          cd.id==='g2'||cd.id==='p2'||
-          (cd.name||'').toLowerCase().includes('doble')||
-          (cd.name||'').includes('x2')||(cd.name||'').includes('×2')
+          cd.id === 'g2' || cd.id === 'p2' ||
+          (cd.name || '').toLowerCase().includes('doble') ||
+          (cd.name || '').includes('x2') || (cd.name || '').includes('×2')
         );
         if (has2x || GAME._pendingDoubleTeam === ti) mult = 2;
       }
@@ -5274,8 +5283,8 @@
                 showCardReveal(card, 'player', capturedTi, capturedPi);
                 showToast(`⭐ ${team.players[capturedPi].name} — ${team.players[capturedPi].correct} correctas. ¡Carta!`, 4000);
                 if (window.db && TV_ROOM_CODE) {
-                  window.db.ref('rooms/'+TV_ROOM_CODE+'/playerNotifs/'+encodeURIComponent(team.players[capturedPi].name)).push({
-                    type:'card_received', icon:card.icon||'🃏', name:card.name, effect:card.effect||'', duration:card.duration||'', ts:Date.now()
+                  window.db.ref('rooms/' + TV_ROOM_CODE + '/playerNotifs/' + encodeURIComponent(team.players[capturedPi].name)).push({
+                    type: 'card_received', icon: card.icon || '🃏', name: card.name, effect: card.effect || '', duration: card.duration || '', ts: Date.now()
                   });
                 }
               }
@@ -5286,7 +5295,7 @@
         showToast(`✓ ${team.name}${playerName ? ' · ' + playerName : ''} +${pts}pts`);
         checkCardTriggers(ti);
         // Consume x2 card if was active
-        const x2idx = team.cards.findIndex(cd => cd.id==='g2'||cd.id==='p2'||(cd.name||'').toLowerCase().includes('doble')||(cd.name||'').includes('x2')||(cd.name||'').includes('×2'));
+        const x2idx = team.cards.findIndex(cd => cd.id === 'g2' || cd.id === 'p2' || (cd.name || '').toLowerCase().includes('doble') || (cd.name || '').includes('x2') || (cd.name || '').includes('×2'));
         if (x2idx !== -1) { team.cards.splice(x2idx, 1); showToast('💥 ¡x2 consumida! +' + pts + 'pt'); }
         if (GAME._pendingDoubleTeam === ti) GAME._pendingDoubleTeam = null;
       } else {
@@ -5492,7 +5501,7 @@
     function executeGlobalCardEvent(card) {
       showToast(`⚡ Efecto Activado: ${card.name}`);
       pushNotif(card.icon || '⚡', `El host activó: <strong>${card.name}</strong>`);
-      
+
       if (window.db && TV_ROOM_CODE) {
         window.db.ref('rooms/' + TV_ROOM_CODE + '/acciones').push({
           tipo: 'evento_global',
@@ -5517,7 +5526,7 @@
       renderScoreboard();
       renderActiveCardEffects();
       broadcastToTV(); // sends to player phones in real time
-      if (typeof pushNotif === 'function') pushNotif(card.icon||'🃏', `🃏 Carta <strong>${card.name}</strong> asignada a <strong>${team.name}</strong>`);
+      if (typeof pushNotif === 'function') pushNotif(card.icon || '🃏', `🃏 Carta <strong>${card.name}</strong> asignada a <strong>${team.name}</strong>`);
       showToast(`🃏 ${card.name} → ${team.name}`);
     }
 
@@ -5833,7 +5842,7 @@
       if (card) showToast(`🃏 ${card.icon || ''} ${card.name} — usada por ${team.name}`);
     }
 
-    window.executeTeamCard = function(ti, ci) {
+    window.executeTeamCard = function (ti, ci) {
       const team = GAME.teams[ti];
       if (!team || !team.cards || team.cards.length <= ci) return;
       const card = team.cards[ci];
@@ -5843,7 +5852,7 @@
       updateInventoryBadge();
     };
 
-    window.executePlayerCard = function(ti, pi, ci) {
+    window.executePlayerCard = function (ti, pi, ci) {
       const player = GAME.teams[ti]?.players[pi];
       if (!player || !player.cards || player.cards.length <= ci) return;
       const card = player.cards[ci];
@@ -6210,7 +6219,7 @@
                      font-family:IM Fell English,serif;font-size:12px;color:${cd.ownerColor};cursor:pointer;"
               onmouseover="this.style.background='${cd.ownerColor}30'"
               onmouseout="this.style.background='${cd.ownerColor}15'">
-              <span style="font-size:16px;">${cd.icon||'🃏'}</span>
+              <span style="font-size:16px;">${cd.icon || '🃏'}</span>
               <span>${cd.name}</span>
               <span style="font-size:9px;opacity:.55;">${cd.ownerName}</span>
             </span>`).join('')}
@@ -6225,13 +6234,13 @@
             ${afflictions.map(a => `
               <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;
                            background:rgba(139,0,0,.15);border:1px solid rgba(204,68,68,.35);border-radius:5px;">
-                <span style="font-size:16px;">${a.icon||'💀'}</span>
+                <span style="font-size:16px;">${a.icon || '💀'}</span>
                 <div style="flex:1;min-width:0;">
                   <span style="font-family:Cinzel,serif;font-size:10px;color:#ff8888;">${a.name}</span>
-                  <span style="font-family:IM Fell English,serif;font-size:10px;color:#cc4444;margin-left:6px;">→ ${a.targetName}${a.targetType==='player'?' ('+a.teamName+')':''}</span>
-                  <span style="font-family:Cinzel,serif;font-size:9px;color:#8b6914;margin-left:6px;">Aplicado por: ${a.appliedBy||'Host'}</span>
+                  <span style="font-family:IM Fell English,serif;font-size:10px;color:#cc4444;margin-left:6px;">→ ${a.targetName}${a.targetType === 'player' ? ' (' + a.teamName + ')' : ''}</span>
+                  <span style="font-family:Cinzel,serif;font-size:9px;color:#8b6914;margin-left:6px;">Aplicado por: ${a.appliedBy || 'Host'}</span>
                 </div>
-                <span style="font-family:Cinzel,serif;font-size:10px;color:#cc4444;background:rgba(0,0,0,.4);padding:2px 8px;border-radius:10px;white-space:nowrap;">${a.remaining||'?'}</span>
+                <span style="font-family:Cinzel,serif;font-size:10px;color:#cc4444;background:rgba(0,0,0,.4);padding:2px 8px;border-radius:10px;white-space:nowrap;">${a.remaining || '?'}</span>
               </div>`).join('')}
           </div>
         </div>`;
@@ -6669,14 +6678,34 @@ REGLAS ESTRICTAS:
       } else if (type === 'mime') {
         area.innerHTML = '<div class="answer-hint">Mimica — un jugador actua sin hablar</div><input class="answer-input" placeholder="Lo que deben adivinar..." style="width:100%;margin-bottom:8px;">';
       } else if (type === 'audio') {
-        const kw=(document.getElementById('q-text')?.value||'').replace(/[¿?¡!,.:;]/g,'').split(' ').filter(w=>w.length>3).slice(0,5).join(' ');
-        const ytSearchUrl='https://www.youtube.com/results?search_query='+encodeURIComponent(kw+' audio sonido');
-        area.innerHTML=`<div class="answer-hint">Audio — pega URL de YouTube y presiona ▶</div><div style="margin-bottom:8px;"><div style="font-family:IM Fell English,serif;font-size:11px;color:var(--gold-dark);font-style:italic;margin-bottom:5px;">💡 <span onclick="window.open('${ytSearchUrl}','_blank')" style="color:#4488cc;text-decoration:underline;cursor:pointer;">Buscar: ${kw||'...'}</span></div><div style="display:flex;gap:6px;margin-bottom:6px;"><input id="audio-url-input" class="input-dnd" placeholder="Pega URL de YouTube aquí..." style="flex:1;font-size:11px;"><button type="button" onclick="playAudioClip()" style="padding:6px 12px;background:#cc2222;border:none;color:#fff;font-family:Cinzel,serif;font-size:11px;cursor:pointer;border-radius:3px;flex-shrink:0;">▶ Play</button></div><div id="audio-player-wrap" style="display:none;margin-bottom:8px;"><iframe id="yt-iframe" width="100%" height="90" frameborder="0" allow="autoplay" allowfullscreen style="border-radius:4px;border:1px solid var(--gold-dark);"></iframe></div></div><input class="answer-input" placeholder="Respuesta correcta..." style="width:100%;">`; 
+        const kw = (document.getElementById('q-text')?.value || '').replace(/[¿?¡!,.:;]/g, '').split(' ').filter(w => w.length > 3).slice(0, 5).join(' ');
+        const ytSearchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(kw + ' audio sonido');
+        area.innerHTML = `<div class="answer-hint">Audio — pega URL de YouTube y presiona ▶</div><div style="margin-bottom:8px;"><div style="font-family:IM Fell English,serif;font-size:11px;color:var(--gold-dark);font-style:italic;margin-bottom:5px;">💡 <span onclick="window.open('${ytSearchUrl}','_blank')" style="color:#4488cc;text-decoration:underline;cursor:pointer;">Buscar: ${kw || '...'}</span></div><div style="display:flex;gap:6px;margin-bottom:6px;"><input id="audio-url-input" class="input-dnd" placeholder="Pega URL de YouTube aquí..." style="flex:1;font-size:11px;"><button type="button" onclick="playAudioClip()" style="padding:6px 12px;background:#cc2222;border:none;color:#fff;font-family:Cinzel,serif;font-size:11px;cursor:pointer;border-radius:3px;flex-shrink:0;">▶ Play</button></div><div id="audio-player-wrap" style="display:none;margin-bottom:8px;"><iframe id="yt-iframe" width="100%" height="90" frameborder="0" allow="autoplay" allowfullscreen style="border-radius:4px;border:1px solid var(--gold-dark);"></iframe></div></div><input class="answer-input" placeholder="Respuesta correcta..." style="width:100%;">`;
       } else if (type === 'chain') {
         area.innerHTML = '<div class="answer-hint">Cadena de palabras</div><input class="answer-input" placeholder="Respuesta correcta..." style="width:100%;">';
+      } else if (type === 'song') {
+        const kw = (document.getElementById('q-text')?.value || '').replace(/[¿?¡!,.:;]/g, '').split(' ').filter(w => w.length > 3).slice(0, 5).join(' ');
+        const ytSearchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(kw + ' letra lyrics');
+        area.innerHTML = `<div class="answer-hint">🎵 Completa la canción — pega URL de YouTube con la canción</div>
+<div style="margin-bottom:8px;">
+  <div style="font-family:IM Fell English,serif;font-size:11px;color:var(--gold-dark);font-style:italic;margin-bottom:5px;">💡 <span onclick="window.open('${ytSearchUrl}','_blank')" style="color:#4488cc;text-decoration:underline;cursor:pointer;">Buscar en YouTube: ${kw || '...'}</span></div>
+  <div style="display:flex;gap:6px;margin-bottom:6px;"><input id="song-url-input" class="input-dnd" placeholder="Pega URL de YouTube aquí..." style="flex:1;font-size:11px;"><button type="button" onclick="playSongClip()" style="padding:6px 12px;background:linear-gradient(135deg,#1a4a1a,#0d2d0d);border:2px solid #2ecc71;color:#2ecc71;font-family:Cinzel,serif;font-size:11px;cursor:pointer;border-radius:3px;flex-shrink:0;">▶ Reproducir</button></div>
+  <div id="song-player-wrap" style="display:none;margin-bottom:8px;"><iframe id="song-iframe" width="100%" height="90" frameborder="0" allow="autoplay" allowfullscreen style="border-radius:4px;border:2px solid #2ecc71;"></iframe></div>
+</div>
+<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:#8b6914;margin-bottom:5px;">LETRA CON ESPACIOS EN BLANCO (usa ___ para los blancos)</div>
+<textarea class="answer-input" id="song-lyric" placeholder="Ej: Es que yo ___ de amor contigo..." style="width:100%;min-height:60px;resize:vertical;"></textarea>
+<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:#8b6914;margin:8px 0 5px;">PALABRAS/FRASE CORRECTA</div>
+<input class="answer-input" placeholder="Lo que debe completar el equipo..." style="width:100%;"></div>`;
       } else if (type === 'open') {
         area.innerHTML = '<div class="answer-hint">Respuesta abierta</div><input class="answer-input" placeholder="Respuesta esperada..." style="width:100%;">';
       }
+
+      const hintBtn = document.getElementById('hint-btn');
+      if (hintBtn) {
+        hintBtn.style.display = (type === 'open') ? 'inline-block' : 'none';
+      }
+      const hintSec = document.getElementById('hint-section');
+      if (hintSec) hintSec.style.display = 'none';
 
       const revBtn = document.getElementById('btn-reveal-answer');
       const revBox = document.getElementById('answer-reveal-box');
@@ -6723,8 +6752,8 @@ REGLAS ESTRICTAS:
       player.cards.push({ ...card, type });
       saveGameState();
       renderTeamCards(); updateInventoryBadge();
-      // Force re-render inventory if open
-      if (_invSidebarOpen) { renderInventoryModal(); }
+      // Always re-render inventory (sidebar open or not)
+      renderInventoryModal();
       renderScoreboard();
       broadcastToTV(); // real-time sync to player phones
       // Notify player's phone about new card
@@ -6734,7 +6763,7 @@ REGLAS ESTRICTAS:
           effect: card.effect || '', duration: card.duration || '', ts: Date.now()
         });
       }
-      if (typeof pushNotif === 'function') pushNotif(card.icon||'🃏', `🃏 Carta <strong>${card.name}</strong> asignada a <strong>${player.name}</strong>`);
+      if (typeof pushNotif === 'function') pushNotif(card.icon || '🃏', `🃏 Carta <strong>${card.name}</strong> asignada a <strong>${player.name}</strong>`);
       showToast(`🃏 ${card.name} → ${player.name}`);
     }
 
@@ -7152,10 +7181,10 @@ REGLAS ESTRICTAS:
       }
 
       const state = {
-        teams: activeTeams.map((t, i) => ({ 
-          name: t.name, 
-          color: t.color, 
-          crest: t.crest || ['🛡️', '⚔️', '🔮', '🏹'][i] || '⚔️', 
+        teams: activeTeams.map((t, i) => ({
+          name: t.name,
+          color: t.color,
+          crest: t.crest || ['🛡️', '⚔️', '🔮', '🏹'][i] || '⚔️',
           score: t.score || 0,
           cards: t.cards || [],
           afflictions: t.afflictions || [],
@@ -7168,8 +7197,8 @@ REGLAS ESTRICTAS:
         })),
         question: qText, category: qCat, type: qType,
         imageUrl: imgUrl, opciones, revealed, ts: Date.now(),
-        buzzEnabled: (typeof _buzzEnabled!=='undefined')?_buzzEnabled:false,
-        participants: (()=>{try{if(typeof SELECTED_PARTICIPANTS==='undefined')return[];return[...SELECTED_PARTICIPANTS].map(k=>{const p=k.split(':');return GAME.teams[+p[1]]?.players[+p[2]]?.name||null;}).filter(Boolean);}catch(e){return[];}})()
+        buzzEnabled: (typeof _buzzEnabled !== 'undefined') ? _buzzEnabled : false,
+        participants: (() => { try { if (typeof SELECTED_PARTICIPANTS === 'undefined') return []; return [...SELECTED_PARTICIPANTS].map(k => { const p = k.split(':'); return GAME.teams[+p[1]]?.players[+p[2]]?.name || null; }).filter(Boolean); } catch (e) { return []; } })()
       };
 
       // Save locally
@@ -7184,9 +7213,9 @@ REGLAS ESTRICTAS:
 
       // Firebase Realtime Database — cross-device sync
       if (window.db) {
-        try { 
+        try {
           const cleanState = JSON.parse(JSON.stringify(state));
-          window.db.ref('rooms/' + TV_ROOM_CODE + '/state').set(cleanState); 
+          window.db.ref('rooms/' + TV_ROOM_CODE + '/state').set(cleanState);
         } catch (e) { console.error('Firebase Error:', e); }
       }
 
@@ -7306,6 +7335,12 @@ REGLAS ESTRICTAS:
         100% { transform:scale(1);  filter:brightness(1); }
       }
       .tv-pts.score-pop { animation: scorePop 0.7s cubic-bezier(0.34,1.56,0.64,1); }
+
+      /* TV reveal animations */
+      @keyframes tvPopIn { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+      @keyframes tvSlideUp { 0% { transform: translateY(60px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+      @keyframes tvZoomIn { 0% { transform: scale(0.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+      @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
 
       /* Score gained floating bubble */
       @keyframes scoreBubble {
@@ -7472,6 +7507,24 @@ REGLAS ESTRICTAS:
       <div style="font-size:clamp(12px,1.5vw,16px);color:rgba(244,228,188,.5);font-style:italic;">Un jugador actúa — ¡sin hablar!</div>
     </div>`;
         if (s.revealed) html += `<div class="tv-revealed">${s.revealed}</div>`;
+        center.innerHTML = html; return;
+      }
+
+      // --- SONG (Completa la Canción) ---
+      if (s.type === 'song') {
+        html = `<div class="tv-mode-card" style="background:linear-gradient(135deg,rgba(8,25,8,.95),rgba(4,14,4,.98));border:2px solid #2ecc71;box-shadow:0 0 40px rgba(46,204,113,.25);">
+      <div class="tv-mode-icon">🎵</div>
+      <div class="tv-mode-label" style="color:#2ecc71;animation:pulse 2s infinite;">Completa la Canción</div>
+      <div class="tv-mode-cat" style="color:#7fff9a;">${s.category || 'Música'}</div>`;
+        if (s.revealed) {
+          html += `<div style="font-family:IM Fell English,serif;font-size:clamp(14px,2vw,22px);color:#f4e4bc;text-align:center;padding:10px 20px;background:rgba(0,0,0,.4);border-radius:8px;border:1px solid rgba(46,204,113,.4);line-height:1.8;">${(s.question || '').replace(/___/g, '<span style="border-bottom:3px solid #2ecc71;padding:0 24px;color:#2ecc71;font-weight:bold;">' + (s.revealed || '___') + '</span>')}</div>`;
+          html += `<div class="tv-revealed" style="border-color:rgba(46,204,113,.5);color:#7fff9a;margin-top:10px;">✅ ${s.revealed}</div>`;
+        } else if (s.question) {
+          html += `<div style="font-family:IM Fell English,serif;font-size:clamp(16px,2.2vw,28px);color:#f4e4bc;text-align:center;padding:10px 20px;background:rgba(0,0,0,.4);border-radius:8px;border:1px solid rgba(46,204,113,.3);line-height:1.9;animation:fadeIn 0.6s;">${(s.question || '').replace(/___/g, '<span style="display:inline-block;border-bottom:3px solid #2ecc71;min-width:80px;animation:pulse 1.5s infinite;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>')}</div>`;
+        } else {
+          html += `<div style="font-size:clamp(12px,1.5vw,16px);color:rgba(46,204,113,.5);font-style:italic;">🎶 Escucha la música y completa la letra…</div>`;
+        }
+        html += `</div>`;
         center.innerHTML = html; return;
       }
 
@@ -7676,35 +7729,28 @@ REGLAS ESTRICTAS:
       <div class="p-title" id="ps-name-title">Los Dragones</div>
       <div class="p-sub">⚔ ESCOGE TU NOMBRE ⚔</div>
       <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:#8b6914;text-align:center;">GUERREROS DEL EQUIPO</div>
         <div id="ps-warrior-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
-        <div id="pg-enemies" class="pg-enemy-scores"></div>
-        <div id="pg-afflictions" style="display:none;flex-wrap:wrap;gap:5px;"></div>
-        <div id="pg-my-cards" style="display:none;margin-top:6px;"></div>
-        <div id="pg-question-wrap" style="display:none;"></div>
-        <div id="pg-buzz-wrap" style="display:none;text-align:center;padding:14px 0;">
-          <button class="pg-buzz-btn" data-state="" onclick="playerBuzz()"
-            style="width:100%;padding:22px;font-family:Cinzel Decorative,serif;font-size:22px;letter-spacing:2px;
-                   border-radius:50px;cursor:pointer;display:block;
-                   background:radial-gradient(circle at 40% 35%,#ff5555,#cc0000,#880000);
-                   border:4px solid #ff3333;color:#fff;
-                   box-shadow:0 8px 0 #660000,0 0 40px rgba(255,0,0,.6),inset 0 3px 6px rgba(255,255,255,.25);
-                   text-shadow:0 2px 6px rgba(0,0,0,.9);animation:redBuzz 1.4s infinite;">
-            🔔 ¡TIMBRAR!
-          </button>
-        </div>
+        <div style="font-family:IM Fell English,serif;font-size:11px;color:#8b6914;text-align:center;font-style:italic;">— o escribe tu nombre —</div>
+        <input class="p-input" id="p-name-input" type="text" placeholder="TU NOMBRE" style="font-size:16px;letter-spacing:3px;">
+        <button class="p-btn" onclick="playerJoin()">⚔ ENTRAR AL CAMPO</button>
+        <button style="background:transparent;border:1px solid #8b6914;color:#8b6914;padding:8px;font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;cursor:pointer;border-radius:3px;" onclick="playerShowScreen('ps-team')">← Cambiar equipo</button>
+      </div>
+    </div>
+
     <!-- SCREEN 4: Main game -->
     <div class="p-screen" id="ps-game">
       <div class="pg-wrap" id="pg-wrap">
-        <div style="position: sticky; top: 0; background: #0d0800; z-index: 10; padding: 10px 0 10px 0; margin-bottom: 10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-            <div style="font-family:Cinzel,serif;font-size:14px;color:#c9a227;font-weight:bold; max-width:65%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="pg-team-label">EQUIPO</div>
+        <div style="position:sticky;top:0;background:linear-gradient(180deg,#0d0800 80%,rgba(13,8,0,0));z-index:10;padding:12px 0 8px;margin-bottom:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="font-family:Cinzel,serif;font-size:15px;color:#c9a227;font-weight:bold;max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="pg-team-label">EQUIPO</div>
             <button class="pg-inv-btn" onclick="playerToggleInventory()" style="margin-bottom:0;">&#128214; Inventario</button>
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:#8b6914; max-width:50%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="pg-player-label">GUERRERO</div>
-            <div style="font-family:Cinzel,serif;font-size:12px;letter-spacing:2px;color:#8b6914;">PUNTOS: <span id="pg-my-score" style="color:#c9a227;font-size:16px;font-weight:bold;">0</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:#8b6914;max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="pg-player-label">GUERRERO</div>
+            <div style="font-family:Cinzel,serif;font-size:12px;letter-spacing:1px;color:#8b6914;">PTS: <span id="pg-my-score" style="color:#c9a227;font-size:18px;font-family:Cinzel Decorative,serif;font-weight:bold;">0</span></div>
           </div>
-          <div style="height:1px; background:rgba(201,162,39,.2); margin-top:10px;"></div>
+          <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,39,.3),transparent);margin-top:8px;"></div>
         </div>
         <div id="pg-enemies" class="pg-enemy-scores"></div>
         <div id="pg-afflictions" style="display:none;flex-wrap:wrap;gap:5px;"></div>
@@ -7804,10 +7850,10 @@ REGLAS ESTRICTAS:
       const name = document.getElementById('p-name-input')?.value.trim();
       if (!name) { alert('Ingresa tu nombre'); return; }
       _playerName = name;
-      window.db.ref('rooms/'+_playerRoom+'/players/'+_playerTeamIdx+'/'+encodeURIComponent(name))
-        .set({ name, team:_playerTeamIdx, ts:Date.now(), online:true });
-      window.db.ref('rooms/'+_playerRoom+'/playerJoins/'+_playerTeamIdx+'/'+encodeURIComponent(name))
-        .set({ name, teamIdx:_playerTeamIdx, ts:Date.now() });
+      window.db.ref('rooms/' + _playerRoom + '/players/' + _playerTeamIdx + '/' + encodeURIComponent(name))
+        .set({ name, team: _playerTeamIdx, ts: Date.now(), online: true });
+      window.db.ref('rooms/' + _playerRoom + '/playerJoins/' + _playerTeamIdx + '/' + encodeURIComponent(name))
+        .set({ name, teamIdx: _playerTeamIdx, ts: Date.now() });
       const plbl = document.getElementById('pg-player-label');
       const tlbl = document.getElementById('pg-team-label');
       if (plbl) plbl.textContent = name.toUpperCase();
@@ -7819,11 +7865,11 @@ REGLAS ESTRICTAS:
     window.playerBuzz = function () {
       if (_buzzSent) return; _buzzSent = true;
       const btn = document.querySelector('.pg-buzz-btn');
-      if (btn) { btn.dataset.state='sent'; btn.textContent='✅ ¡Timbrado!'; btn.style.cssText='width:100%;padding:22px;font-family:Cinzel Decorative,serif;font-size:20px;border-radius:50px;display:block;background:radial-gradient(circle at 40% 35%,#44bb66,#228844,#115522);border:4px solid #27ae60;color:#fff;box-shadow:0 8px 0 #115522,0 0 30px rgba(46,204,113,.5);animation:none;cursor:default;'; }
-      const buzzRef = window.db?.ref('rooms/'+_playerRoom+'/firstBuzz');
+      if (btn) { btn.dataset.state = 'sent'; btn.textContent = '✅ ¡Timbrado!'; btn.style.cssText = 'width:100%;padding:22px;font-family:Cinzel Decorative,serif;font-size:20px;border-radius:50px;display:block;background:radial-gradient(circle at 40% 35%,#44bb66,#228844,#115522);border:4px solid #27ae60;color:#fff;box-shadow:0 8px 0 #115522,0 0 30px rgba(46,204,113,.5);animation:none;cursor:default;'; }
+      const buzzRef = window.db?.ref('rooms/' + _playerRoom + '/firstBuzz');
       if (buzzRef) {
-        buzzRef.transaction(cur => { if(cur===null) return {jugador:_playerName,equipo:_playerTeamIdx,color:_playerTeamColor,ts:Date.now()}; return undefined; },
-        (err,committed) => { if(!committed&&btn){btn.textContent='⏱ Otro llegó primero';btn.style.background='radial-gradient(circle at 40% 35%,#555,#333,#222)';btn.style.borderColor='#555';btn.style.boxShadow='none';} });
+        buzzRef.transaction(cur => { if (cur === null) return { jugador: _playerName, equipo: _playerTeamIdx, color: _playerTeamColor, ts: Date.now() }; return undefined; },
+          (err, committed) => { if (!committed && btn) { btn.textContent = '⏱ Otro llegó primero'; btn.style.background = 'radial-gradient(circle at 40% 35%,#555,#333,#222)'; btn.style.borderColor = '#555'; btn.style.boxShadow = 'none'; } });
       }
     };
 
@@ -7891,24 +7937,24 @@ REGLAS ESTRICTAS:
     let _lastPlayerState = null;
     function playerStartListening() {
       if (!window.db) return;
-      window.db.ref('rooms/'+_playerRoom+'/state').on('value', snap => {
+      window.db.ref('rooms/' + _playerRoom + '/state').on('value', snap => {
         const s = snap.val(); if (!s) return;
         _lastPlayerState = s; playerRenderGameScreen(s);
       });
       if (_playerName) {
-        window.db.ref('rooms/'+_playerRoom+'/playerNotifs/'+encodeURIComponent(_playerName)).on('child_added', snap => {
+        window.db.ref('rooms/' + _playerRoom + '/playerNotifs/' + encodeURIComponent(_playerName)).on('child_added', snap => {
           const notif = snap.val();
-          if (!notif || Date.now()-notif.ts > 60000) return;
+          if (!notif || Date.now() - notif.ts > 60000) return;
           if (notif.type === 'affliction') showPlayerAfflictionCard(notif);
           else if (notif.type === 'card_received') showPlayerCardReceived(notif);
         });
       }
-      window.db.ref('rooms/'+_playerRoom+'/firstBuzz').on('value', snap => {
+      window.db.ref('rooms/' + _playerRoom + '/firstBuzz').on('value', snap => {
         const bz = snap.val();
-        if (!bz) { _buzzSent=false; const btn=document.querySelector('.pg-buzz-btn'); if(btn)btn.dataset.state=''; return; }
-        if (bz.jugador && bz.jugador!==_playerName) {
-          const btn=document.querySelector('.pg-buzz-btn');
-          if(btn&&btn.dataset.state!=='sent'){btn.textContent='⏱ '+bz.jugador+' llegó primero';btn.style.cssText='width:100%;padding:16px;font-family:Cinzel,serif;font-size:14px;border-radius:50px;display:block;background:rgba(20,10,0,.8);border:3px solid #555;color:#666;cursor:default;animation:none;';}
+        if (!bz) { _buzzSent = false; const btn = document.querySelector('.pg-buzz-btn'); if (btn) btn.dataset.state = ''; return; }
+        if (bz.jugador && bz.jugador !== _playerName) {
+          const btn = document.querySelector('.pg-buzz-btn');
+          if (btn && btn.dataset.state !== 'sent') { btn.textContent = '⏱ ' + bz.jugador + ' llegó primero'; btn.style.cssText = 'width:100%;padding:16px;font-family:Cinzel,serif;font-size:14px;border-radius:50px;display:block;background:rgba(20,10,0,.8);border:3px solid #555;color:#666;cursor:default;animation:none;'; }
         }
       });
     }
@@ -7962,7 +8008,7 @@ REGLAS ESTRICTAS:
     }
 
     window._myCards = [];
-            
+
     window._myCards = [];
 
     function playerRenderGameScreen(s) {
@@ -7973,7 +8019,7 @@ REGLAS ESTRICTAS:
       const myScoreEl = document.getElementById('pg-my-score');
       if (myScoreEl && myScoreEl.textContent !== String(myTeam.score)) {
         myScoreEl.textContent = myTeam.score; myScoreEl.style.color = _playerTeamColor;
-        myScoreEl.animate && myScoreEl.animate([{transform:'scale(1.35)',opacity:.4},{transform:'scale(1)',opacity:1}],{duration:300,easing:'ease-out'});
+        myScoreEl.animate && myScoreEl.animate([{ transform: 'scale(1.35)', opacity: .4 }, { transform: 'scale(1)', opacity: 1 }], { duration: 300, easing: 'ease-out' });
       }
       const teamLbl = document.getElementById('pg-team-label');
       if (teamLbl) teamLbl.textContent = myTeam.name;
@@ -7981,24 +8027,24 @@ REGLAS ESTRICTAS:
       // Enemies
       const enemyEl = document.getElementById('pg-enemies');
       if (enemyEl) {
-        enemyEl.innerHTML = s.teams.filter((_,i)=>i!==_playerTeamIdx).map(t =>
-          `<div class="pg-enemy" style="border-color:${t.color};color:${t.color};"><div style="font-size:11px;">${t.crest||'⚔'} ${t.name}</div><div style="font-family:Cinzel Decorative,serif;font-size:22px;">${t.score}</div></div>`).join('');
+        enemyEl.innerHTML = s.teams.filter((_, i) => i !== _playerTeamIdx).map(t =>
+          `<div class="pg-enemy" style="border-color:${t.color};color:${t.color};"><div style="font-size:11px;">${t.crest || '⚔'} ${t.name}</div><div style="font-family:Cinzel Decorative,serif;font-size:22px;">${t.score}</div></div>`).join('');
       }
 
       // Cards — always live update
       const me = myTeam.players?.find(p => p.name === _playerName);
-      const allCards = [...(me?.cards||[]).map(cd=>({...cd,_src:'personal'})), ...(myTeam.cards||[]).map(cd=>({...cd,_src:'team'}))];
+      const allCards = [...(me?.cards || []).map(cd => ({ ...cd, _src: 'personal' })), ...(myTeam.cards || []).map(cd => ({ ...cd, _src: 'team' }))];
       window._myCards = allCards;
       const cardsEl = document.getElementById('pg-my-cards');
       if (cardsEl) {
         if (allCards.length) {
-          const TC = {bad:'#ff8888',good:'#88ffaa',player:'#aaccff',dice:'#ddaaff'};
+          const TC = { bad: '#ff8888', good: '#88ffaa', player: '#aaccff', dice: '#ddaaff' };
           cardsEl.style.display = 'block';
           cardsEl.innerHTML = '<div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--gold-dark);margin-bottom:6px;">🃏 MIS CARTAS — toca para usar</div>' +
-            allCards.map((cd,i) =>
+            allCards.map((cd, i) =>
               `<button onclick="playerOpenCard(${i})"
-                style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:2px solid ${TC[cd.type]||'#c9a227'};border-radius:6px;font-size:13px;margin:3px;cursor:pointer;background:rgba(0,0,0,.45);color:${TC[cd.type]||'#c9a227'};font-family:IM Fell English,serif;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation;">
-                ${cd.icon||'🃏'} ${cd.name}${cd._src==='team'?'<span style="font-size:9px;opacity:.5;">(eq)</span>':''}
+                style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:2px solid ${TC[cd.type] || '#c9a227'};border-radius:6px;font-size:13px;margin:3px;cursor:pointer;background:rgba(0,0,0,.45);color:${TC[cd.type] || '#c9a227'};font-family:IM Fell English,serif;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation;">
+                ${cd.icon || '🃏'} ${cd.name}${cd._src === 'team' ? '<span style="font-size:9px;opacity:.5;">(eq)</span>' : ''}
               </button>`).join('');
         } else {
           cardsEl.style.display = 'none';
@@ -8015,9 +8061,9 @@ REGLAS ESTRICTAS:
           afflEl.style.display = 'flex'; afflEl.style.flexWrap = 'wrap'; afflEl.style.gap = '5px';
           afflEl.innerHTML = '<div style="width:100%;font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:#cc4444;margin-bottom:3px;">💀 AFLIXIONES ACTIVAS</div>' +
             allAffl.map(a =>
-              `<div onclick="playerShowAfflDetail('${(a.name||'').replace(/'/g,'&#39;')}','${(a.effect||'').replace(/'/g,'&#39;')}','${a.remaining||'?'}','${(a.appliedBy||'?').replace(/'/g,'&#39;')}')"
+              `<div onclick="playerShowAfflDetail('${(a.name || '').replace(/'/g, '&#39;')}','${(a.effect || '').replace(/'/g, '&#39;')}','${a.remaining || '?'}','${(a.appliedBy || '?').replace(/'/g, '&#39;')}')"
                 style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:rgba(139,0,0,.3);border:1px solid rgba(204,68,68,.5);border-radius:20px;cursor:pointer;touch-action:manipulation;margin:2px;">
-                ${a.icon||'💀'} <span style="font-size:12px;">${a.name}</span>
+                ${a.icon || '💀'} <span style="font-size:12px;">${a.name}</span>
               </div>`).join('');
         } else {
           afflEl.style.display = 'none';
@@ -8049,83 +8095,83 @@ REGLAS ESTRICTAS:
         } else if (buzzEnabled && !imParticipant) {
           buzzWrap.style.display = 'block';
           const btn = buzzWrap.querySelector('.pg-buzz-btn');
-          if (btn) { btn.textContent='🚫 No participas'; btn.style.cssText='width:100%;padding:16px;font-family:Cinzel,serif;font-size:14px;border-radius:50px;background:rgba(30,10,0,.8);border:3px solid #555;color:#666;cursor:default;animation:none;display:block;'; }
+          if (btn) { btn.textContent = '🚫 No participas'; btn.style.cssText = 'width:100%;padding:16px;font-family:Cinzel,serif;font-size:14px;border-radius:50px;background:rgba(30,10,0,.8);border:3px solid #555;color:#666;cursor:default;animation:none;display:block;'; }
         } else {
           buzzWrap.style.display = 'none';
-          if (!buzzEnabled) { _buzzSent=false; const btn=buzzWrap.querySelector('.pg-buzz-btn'); if(btn)btn.dataset.state=''; }
+          if (!buzzEnabled) { _buzzSent = false; const btn = buzzWrap.querySelector('.pg-buzz-btn'); if (btn) btn.dataset.state = ''; }
         }
       }
-      if (s.ts !== _lastStateTs) { _buzzSent=false; _lastStateTs=s.ts; const btn=document.querySelector('.pg-buzz-btn'); if(btn)btn.dataset.state=''; }
+      if (s.ts !== _lastStateTs) { _buzzSent = false; _lastStateTs = s.ts; const btn = document.querySelector('.pg-buzz-btn'); if (btn) btn.dataset.state = ''; }
     }
 
-    window.playerOpenCard = function(i) {
+    window.playerOpenCard = function (i) {
       const card = window._myCards[i]; if (!card) return;
       document.getElementById('pg-card-ov')?.remove();
       const ov = document.createElement('div'); ov.id = 'pg-card-ov';
       ov.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center;padding:20px;';
-      const TC = {bad:'#cc4444',good:'#44aa66',player:'#4488cc',dice:'#9966cc'};
+      const TC = { bad: '#cc4444', good: '#44aa66', player: '#4488cc', dice: '#9966cc' };
       const col = TC[card.type] || '#c9a227';
       ov.innerHTML = `<div style="max-width:320px;width:100%;background:linear-gradient(160deg,#1e1005,#0d0500);border:2px solid ${col};border-radius:10px;padding:24px;text-align:center;">
-        <div style="font-size:56px;margin-bottom:8px;">${card.icon||'🃏'}</div>
+        <div style="font-size:56px;margin-bottom:8px;">${card.icon || '🃏'}</div>
         <div style="font-family:Cinzel Decorative,serif;font-size:17px;color:${col};margin-bottom:8px;">${card.name}</div>
-        <div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:12px;font-family:IM Fell English,serif;font-size:14px;line-height:1.7;color:#f4e4bc;">${card.effect||''}</div>
-        <div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:16px;">Duración: ${card.duration||'—'}${card._src==='team'?' · Carta de equipo':''}</div>
+        <div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:12px;font-family:IM Fell English,serif;font-size:14px;line-height:1.7;color:#f4e4bc;">${card.effect || ''}</div>
+        <div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:16px;">Duración: ${card.duration || '—'}${card._src === 'team' ? ' · Carta de equipo' : ''}</div>
         <button onclick="playerUseCard(${i})" style="margin-bottom:8px;padding:13px 24px;background:linear-gradient(135deg,${col}33,${col}11);border:2px solid ${col};color:${col};font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;cursor:pointer;border-radius:5px;width:100%;display:block;touch-action:manipulation;">⚡ USAR CARTA</button>
         <button onclick="document.getElementById('pg-card-ov').remove()" style="padding:9px 24px;border:1px solid ${col}44;color:${col}88;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:5px;width:100%;display:block;">Cerrar</button>
       </div>`;
-      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      ov.onclick = e => { if (e.target === ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
-    window.playerUseCard = function(i) {
+    window.playerUseCard = function (i) {
       const card = window._myCards[i]; if (!card) return;
       document.getElementById('pg-card-ov')?.remove();
-      if (card.isAffliction && card.afflictTarget==='player') { playerPickTarget(card, i, 'player'); return; }
-      if (card.isAffliction && card.afflictTarget==='team') { playerPickTarget(card, i, 'team'); return; }
-      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({card, cardIdx:i, isTeamCard:card._src==='team', playerName:_playerName, teamIdx:_playerTeamIdx, actionType:'use', ts:Date.now()});
-      playerShowToast('⚡ Carta enviada: '+card.name);
+      if (card.isAffliction && card.afflictTarget === 'player') { playerPickTarget(card, i, 'player'); return; }
+      if (card.isAffliction && card.afflictTarget === 'team') { playerPickTarget(card, i, 'team'); return; }
+      window.db?.ref('rooms/' + _playerRoom + '/cardActions').push({ card, cardIdx: i, isTeamCard: card._src === 'team', playerName: _playerName, teamIdx: _playerTeamIdx, actionType: 'use', ts: Date.now() });
+      playerShowToast('⚡ Carta enviada: ' + card.name);
     };
 
-    window.playerPickTarget = function(card, ci, mode) {
+    window.playerPickTarget = function (card, ci, mode) {
       const s = _lastPlayerState; if (!s?.teams) return;
       document.getElementById('pg-pick-ov')?.remove();
       const ov = document.createElement('div'); ov.id = 'pg-pick-ov';
       ov.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
       let items = '';
-      if (mode==='player') {
-        s.teams.forEach((t,ti) => (t.players||[]).forEach(p => {
-          if (p.name===_playerName) return;
-          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti},'${p.name.replace(/'/g,"&#39;")}',null)" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid ${t.color}66;border-radius:4px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:13px;margin-bottom:6px;touch-action:manipulation;"><span>${t.crest}</span><span>${p.name}</span><span style="font-size:10px;color:${t.color};margin-left:auto;">${t.name}</span></button>`;
+      if (mode === 'player') {
+        s.teams.forEach((t, ti) => (t.players || []).forEach(p => {
+          if (p.name === _playerName) return;
+          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g, '&quot;')},${ci},${ti},'${p.name.replace(/'/g, "&#39;")}',null)" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid ${t.color}66;border-radius:4px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:13px;margin-bottom:6px;touch-action:manipulation;"><span>${t.crest}</span><span>${p.name}</span><span style="font-size:10px;color:${t.color};margin-left:auto;">${t.name}</span></button>`;
         }));
       } else {
-        s.teams.filter((_,i)=>i!==_playerTeamIdx).forEach(t => {
-          const ti2=s.teams.indexOf(t);
-          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti2},null,${ti2})" style="display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;border:1px solid ${t.color}66;border-radius:5px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:14px;margin-bottom:8px;touch-action:manipulation;"><span style="font-size:20px;">${t.crest}</span><span>${t.name}</span></button>`;
+        s.teams.filter((_, i) => i !== _playerTeamIdx).forEach(t => {
+          const ti2 = s.teams.indexOf(t);
+          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g, '&quot;')},${ci},${ti2},null,${ti2})" style="display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;border:1px solid ${t.color}66;border-radius:5px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:14px;margin-bottom:8px;touch-action:manipulation;"><span style="font-size:20px;">${t.crest}</span><span>${t.name}</span></button>`;
         });
       }
       ov.innerHTML = `<div style="max-width:340px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:20px;max-height:80vh;overflow-y:auto;"><div style="font-family:Cinzel Decorative,serif;font-size:14px;color:#cc4444;text-align:center;margin-bottom:14px;">💀 Elige tu víctima</div>${items}<button onclick="document.getElementById('pg-pick-ov').remove()" style="width:100%;padding:9px;border:1px solid #8b6914;color:#8b6914;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:4px;">Cancelar</button></div>`;
-      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      ov.onclick = e => { if (e.target === ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
-    window.playerSendAffliction = function(card, ci, targetTeamIdx, targetPlayerName, targetTeamOnly) {
+    window.playerSendAffliction = function (card, ci, targetTeamIdx, targetPlayerName, targetTeamOnly) {
       document.getElementById('pg-pick-ov')?.remove();
       const myTeamName = _lastPlayerState?.teams?.[_playerTeamIdx]?.name || '';
-      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({card, cardIdx:ci, isTeamCard:!!card._src&&card._src==='team', playerName:_playerName, teamIdx:_playerTeamIdx, actionType:targetTeamOnly!==null?'afflict-team':'afflict-player', targetTeamIdx, targetPlayerName, ts:Date.now()});
+      window.db?.ref('rooms/' + _playerRoom + '/cardActions').push({ card, cardIdx: ci, isTeamCard: !!card._src && card._src === 'team', playerName: _playerName, teamIdx: _playerTeamIdx, actionType: targetTeamOnly !== null ? 'afflict-team' : 'afflict-player', targetTeamIdx, targetPlayerName, ts: Date.now() });
       if (targetPlayerName) {
-        window.db?.ref('rooms/'+_playerRoom+'/playerNotifs/'+encodeURIComponent(targetPlayerName)).push({
-          type:'affliction', icon:card.icon||'💀', name:card.name, effect:card.effect||'', remaining:card.duration||'1 pregunta', from:_playerName, fromTeam:myTeamName, ts:Date.now()
+        window.db?.ref('rooms/' + _playerRoom + '/playerNotifs/' + encodeURIComponent(targetPlayerName)).push({
+          type: 'affliction', icon: card.icon || '💀', name: card.name, effect: card.effect || '', remaining: card.duration || '1 pregunta', from: _playerName, fromTeam: myTeamName, ts: Date.now()
         });
       }
       playerShowToast('💀 Aflixión enviada!');
     };
 
-    window.playerShowAfflDetail = function(name, effect, remaining, appliedBy) {
+    window.playerShowAfflDetail = function (name, effect, remaining, appliedBy) {
       document.getElementById('pg-affl-ov')?.remove();
       const ov = document.createElement('div'); ov.id = 'pg-affl-ov';
       ov.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;';
-      ov.innerHTML = `<div style="max-width:300px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:22px;text-align:center;"><div style="font-size:42px;margin-bottom:8px;">💀</div><div style="font-family:Cinzel Decorative,serif;font-size:16px;color:#ff6666;margin-bottom:10px;">${name}</div><div style="font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.6;margin-bottom:12px;">${effect}</div><div style="font-family:Cinzel,serif;font-size:11px;color:#cc4444;">⏳ ${remaining}</div><div style="font-family:Cinzel,serif;font-size:10px;color:#8b6914;margin-top:6px;">Por: ${appliedBy||'?'}</div><button onclick="document.getElementById('pg-affl-ov').remove()" style="margin-top:16px;padding:10px;width:100%;border:1px solid #cc444466;color:#cc4444;background:transparent;font-family:Cinzel,serif;cursor:pointer;border-radius:4px;">Cerrar</button></div>`;
-      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      ov.innerHTML = `<div style="max-width:300px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:22px;text-align:center;"><div style="font-size:42px;margin-bottom:8px;">💀</div><div style="font-family:Cinzel Decorative,serif;font-size:16px;color:#ff6666;margin-bottom:10px;">${name}</div><div style="font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.6;margin-bottom:12px;">${effect}</div><div style="font-family:Cinzel,serif;font-size:11px;color:#cc4444;">⏳ ${remaining}</div><div style="font-family:Cinzel,serif;font-size:10px;color:#8b6914;margin-top:6px;">Por: ${appliedBy || '?'}</div><button onclick="document.getElementById('pg-affl-ov').remove()" style="margin-top:16px;padding:10px;width:100%;border:1px solid #cc444466;color:#cc4444;background:transparent;font-family:Cinzel,serif;cursor:pointer;border-radius:4px;">Cerrar</button></div>`;
+      ov.onclick = e => { if (e.target === ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
@@ -8135,79 +8181,79 @@ REGLAS ESTRICTAS:
       document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
 
-    window.playerOpenCard = function(i) {
+    window.playerOpenCard = function (i) {
       const card = window._myCards[i]; if (!card) return;
       document.getElementById('pg-card-ov')?.remove();
       const ov = document.createElement('div'); ov.id = 'pg-card-ov';
       ov.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center;padding:20px;';
-      const TC = {bad:'#cc4444',good:'#44aa66',player:'#4488cc',dice:'#9966cc'};
+      const TC = { bad: '#cc4444', good: '#44aa66', player: '#4488cc', dice: '#9966cc' };
       const col = TC[card.type] || '#c9a227';
       ov.innerHTML = `<div style="max-width:320px;width:100%;background:linear-gradient(160deg,#1e1005,#0d0500);border:2px solid ${col};border-radius:10px;padding:24px;text-align:center;">
-        <div style="font-size:56px;margin-bottom:8px;">${card.icon||'🃏'}</div>
+        <div style="font-size:56px;margin-bottom:8px;">${card.icon || '🃏'}</div>
         <div style="font-family:Cinzel Decorative,serif;font-size:17px;color:${col};margin-bottom:8px;">${card.name}</div>
-        <div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:12px;font-family:IM Fell English,serif;font-size:14px;line-height:1.7;color:#f4e4bc;">${card.effect||''}</div>
-        <div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:16px;">Duración: ${card.duration||'—'}${card._src==='team'?' · Carta de equipo':''}</div>
+        <div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:12px;font-family:IM Fell English,serif;font-size:14px;line-height:1.7;color:#f4e4bc;">${card.effect || ''}</div>
+        <div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:16px;">Duración: ${card.duration || '—'}${card._src === 'team' ? ' · Carta de equipo' : ''}</div>
         <button onclick="playerUseCard(${i})" style="margin-bottom:8px;padding:13px 24px;background:linear-gradient(135deg,${col}33,${col}11);border:2px solid ${col};color:${col};font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;cursor:pointer;border-radius:5px;width:100%;display:block;touch-action:manipulation;">⚡ USAR CARTA</button>
         <button onclick="document.getElementById('pg-card-ov').remove()" style="padding:9px 24px;border:1px solid ${col}44;color:${col}88;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:5px;width:100%;display:block;">Cerrar</button>
       </div>`;
-      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      ov.onclick = e => { if (e.target === ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
-    window.playerUseCard = function(i) {
+    window.playerUseCard = function (i) {
       const card = window._myCards[i]; if (!card) return;
       document.getElementById('pg-card-ov')?.remove();
       if (card.isAffliction && card.afflictTarget === 'player') { playerPickTarget(card, i, 'player'); return; }
       if (card.isAffliction && card.afflictTarget === 'team') { playerPickTarget(card, i, 'team'); return; }
-      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({
-        card, cardIdx:i, isTeamCard:card._src==='team', playerName:_playerName, teamIdx:_playerTeamIdx, actionType:'use', ts:Date.now()
+      window.db?.ref('rooms/' + _playerRoom + '/cardActions').push({
+        card, cardIdx: i, isTeamCard: card._src === 'team', playerName: _playerName, teamIdx: _playerTeamIdx, actionType: 'use', ts: Date.now()
       });
-      playerShowToast('⚡ Carta enviada: '+card.name);
+      playerShowToast('⚡ Carta enviada: ' + card.name);
     };
 
-    window.playerPickTarget = function(card, ci, mode) {
+    window.playerPickTarget = function (card, ci, mode) {
       const s = _lastPlayerState; if (!s?.teams) return;
       document.getElementById('pg-pick-ov')?.remove();
       const ov = document.createElement('div'); ov.id = 'pg-pick-ov';
       ov.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
       let items = '';
       if (mode === 'player') {
-        s.teams.forEach((t,ti) => (t.players||[]).forEach(p => {
+        s.teams.forEach((t, ti) => (t.players || []).forEach(p => {
           if (p.name === _playerName) return;
-          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti},'${p.name.replace(/'/g,"&#39;")}',null)" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid ${t.color}66;border-radius:4px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:13px;margin-bottom:6px;touch-action:manipulation;"><span>${t.crest}</span><span>${p.name}</span><span style="font-size:10px;color:${t.color};margin-left:auto;">${t.name}</span></button>`;
+          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g, '&quot;')},${ci},${ti},'${p.name.replace(/'/g, "&#39;")}',null)" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid ${t.color}66;border-radius:4px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:13px;margin-bottom:6px;touch-action:manipulation;"><span>${t.crest}</span><span>${p.name}</span><span style="font-size:10px;color:${t.color};margin-left:auto;">${t.name}</span></button>`;
         }));
       } else {
-        s.teams.filter((_,i)=>i!==_playerTeamIdx).forEach(t => {
+        s.teams.filter((_, i) => i !== _playerTeamIdx).forEach(t => {
           const ti2 = s.teams.indexOf(t);
-          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g,'&quot;')},${ci},${ti2},null,${ti2})" style="display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;border:1px solid ${t.color}66;border-radius:5px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:14px;margin-bottom:8px;touch-action:manipulation;"><span style="font-size:20px;">${t.crest}</span><span>${t.name}</span></button>`;
+          items += `<button onclick="playerSendAffliction(${JSON.stringify(card).replace(/"/g, '&quot;')},${ci},${ti2},null,${ti2})" style="display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;border:1px solid ${t.color}66;border-radius:5px;background:rgba(0,0,0,.4);color:#f4e4bc;cursor:pointer;font-family:IM Fell English,serif;font-size:14px;margin-bottom:8px;touch-action:manipulation;"><span style="font-size:20px;">${t.crest}</span><span>${t.name}</span></button>`;
         });
       }
       ov.innerHTML = `<div style="max-width:340px;width:100%;background:linear-gradient(160deg,#1e0505,#0d0000);border:2px solid #cc4444;border-radius:8px;padding:20px;max-height:80vh;overflow-y:auto;"><div style="font-family:Cinzel Decorative,serif;font-size:14px;color:#cc4444;text-align:center;margin-bottom:14px;">💀 Elige tu víctima</div>${items}<button onclick="document.getElementById('pg-pick-ov').remove()" style="width:100%;padding:9px;border:1px solid #8b6914;color:#8b6914;background:transparent;font-family:Cinzel,serif;font-size:10px;cursor:pointer;border-radius:3px;margin-top:4px;">Cancelar</button></div>`;
-      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      ov.onclick = e => { if (e.target === ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
-    window.playerSendAffliction = function(card, ci, targetTeamIdx, targetPlayerName, targetTeamOnly) {
+    window.playerSendAffliction = function (card, ci, targetTeamIdx, targetPlayerName, targetTeamOnly) {
       document.getElementById('pg-pick-ov')?.remove();
       const myTeamName = _lastPlayerState?.teams?.[_playerTeamIdx]?.name || '';
-      window.db?.ref('rooms/'+_playerRoom+'/cardActions').push({
-        card, cardIdx:ci, isTeamCard:!!card._src&&card._src==='team',
-        playerName:_playerName, teamIdx:_playerTeamIdx,
-        actionType: targetTeamOnly!==null ? 'afflict-team' : 'afflict-player',
-        targetTeamIdx, targetPlayerName, ts:Date.now()
+      window.db?.ref('rooms/' + _playerRoom + '/cardActions').push({
+        card, cardIdx: ci, isTeamCard: !!card._src && card._src === 'team',
+        playerName: _playerName, teamIdx: _playerTeamIdx,
+        actionType: targetTeamOnly !== null ? 'afflict-team' : 'afflict-player',
+        targetTeamIdx, targetPlayerName, ts: Date.now()
       });
       if (targetPlayerName) {
-        window.db?.ref('rooms/'+_playerRoom+'/playerNotifs/'+encodeURIComponent(targetPlayerName)).push({
-          type:'affliction', icon:card.icon||'💀', name:card.name,
-          effect:card.effect||'', remaining:card.duration||'1 pregunta',
-          from:_playerName, fromTeam:myTeamName, ts:Date.now()
+        window.db?.ref('rooms/' + _playerRoom + '/playerNotifs/' + encodeURIComponent(targetPlayerName)).push({
+          type: 'affliction', icon: card.icon || '💀', name: card.name,
+          effect: card.effect || '', remaining: card.duration || '1 pregunta',
+          from: _playerName, fromTeam: myTeamName, ts: Date.now()
         });
       }
-      const targetName = targetPlayerName || (_lastPlayerState?.teams?.[targetTeamIdx]?.name)||'';
-      playerShowToast('💀 Aflixión enviada a '+targetName);
+      const targetName = targetPlayerName || (_lastPlayerState?.teams?.[targetTeamIdx]?.name) || '';
+      playerShowToast('💀 Aflixión enviada a ' + targetName);
     };
 
-    window.playerShowAfflDetail = function(name, effect, remaining, appliedBy) {
+    window.playerShowAfflDetail = function (name, effect, remaining, appliedBy) {
       document.getElementById('pg-affl-ov')?.remove();
       const ov = document.createElement('div'); ov.id = 'pg-affl-ov';
       ov.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;';
@@ -8216,10 +8262,10 @@ REGLAS ESTRICTAS:
         <div style="font-family:Cinzel Decorative,serif;font-size:16px;color:#ff6666;margin-bottom:10px;">${name}</div>
         <div style="font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.6;margin-bottom:12px;">${effect}</div>
         <div style="font-family:Cinzel,serif;font-size:11px;color:#cc4444;">⏳ ${remaining}</div>
-        <div style="font-family:Cinzel,serif;font-size:10px;color:#8b6914;margin-top:6px;">Por: ${appliedBy||'?'}</div>
+        <div style="font-family:Cinzel,serif;font-size:10px;color:#8b6914;margin-top:6px;">Por: ${appliedBy || '?'}</div>
         <button onclick="document.getElementById('pg-affl-ov').remove()" style="margin-top:16px;padding:10px;width:100%;border:1px solid #cc444466;color:#cc4444;background:transparent;font-family:Cinzel,serif;cursor:pointer;border-radius:4px;">Cerrar</button>
       </div>`;
-      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      ov.onclick = e => { if (e.target === ov) ov.remove(); };
       document.body.appendChild(ov);
     };
 
@@ -8228,19 +8274,19 @@ REGLAS ESTRICTAS:
       document.getElementById('player-card-recv-ov')?.remove();
       const ov = document.createElement('div'); ov.id = 'player-card-recv-ov';
       ov.style.cssText = 'position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:24px;';
-      const TC = {bad:'#cc4444',good:'#44aa66',player:'#4488cc',dice:'#9966cc'};
+      const TC = { bad: '#cc4444', good: '#44aa66', player: '#4488cc', dice: '#9966cc' };
       const col = TC[notif.type] || '#c9a227';
       ov.innerHTML = `<div style="max-width:320px;width:100%;text-align:center;animation:cardRecvAnim .5s ease;">
         <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:4px;color:${col};margin-bottom:14px;">⭐ ¡NUEVA CARTA! ⭐</div>
-        <div style="font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 20px ${col});">${notif.icon||'🃏'}</div>
+        <div style="font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 20px ${col});">${notif.icon || '🃏'}</div>
         <div style="font-family:Cinzel Decorative,serif;font-size:22px;color:${col};margin-bottom:10px;text-shadow:0 0 20px ${col}66;">${notif.name}</div>
-        <div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:16px;font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.7;">${notif.effect||''}</div>
-        <div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:20px;">Duración: ${notif.duration||'—'}</div>
+        <div style="background:rgba(0,0,0,.4);border:1px solid ${col}33;border-radius:6px;padding:12px;margin-bottom:16px;font-family:IM Fell English,serif;font-size:14px;color:#f4e4bc;line-height:1.7;">${notif.effect || ''}</div>
+        <div style="font-family:Cinzel,serif;font-size:10px;color:rgba(201,162,39,.5);margin-bottom:20px;">Duración: ${notif.duration || '—'}</div>
         <button onclick="document.getElementById('player-card-recv-ov').remove()"
           style="padding:14px 32px;background:linear-gradient(180deg,${col},${col}88);border:none;border-radius:6px;color:#fff;font-family:Cinzel,serif;font-size:13px;letter-spacing:2px;cursor:pointer;width:100%;">🎉 ¡ENTENDIDO!</button>
       </div>
       <style>@keyframes cardRecvAnim{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}</style>`;
-      ov.onclick = e => { if(e.target===ov) ov.remove(); };
+      ov.onclick = e => { if (e.target === ov) ov.remove(); };
       document.body.appendChild(ov);
       setTimeout(() => ov?.remove(), 15000);
     }
@@ -8262,19 +8308,19 @@ REGLAS ESTRICTAS:
       GAME.teams.forEach((t, ti) => {
         // Team afflictions
         (t.afflictions || []).forEach(a => {
-          items.push({ icon:a.icon||'💀', text:`<strong style="color:${t.color}">${t.name}</strong> aflijido por <em>${a.name}</em>`, remaining:a.remaining||'?', appliedBy:a.appliedBy||'Host', color:'#ff8888', ti, afId:a.id, type:'team' });
+          items.push({ icon: a.icon || '💀', text: `<strong style="color:${t.color}">${t.name}</strong> aflijido por <em>${a.name}</em>`, remaining: a.remaining || '?', appliedBy: a.appliedBy || 'Host', color: '#ff8888', ti, afId: a.id, type: 'team' });
         });
         // Team benefit cards
         t.cards.filter(cd => cd.type === 'good' || cd.type === 'player').forEach(cd => {
-          items.push({ icon:cd.icon||'✨', text:`<strong style="color:${t.color}">${t.name}</strong> tiene <em>${cd.name}</em>`, remaining:cd.duration||'?', appliedBy:'Host', color:'#88ffaa', ti, type:'teamcard' });
+          items.push({ icon: cd.icon || '✨', text: `<strong style="color:${t.color}">${t.name}</strong> tiene <em>${cd.name}</em>`, remaining: cd.duration || '?', appliedBy: 'Host', color: '#88ffaa', ti, type: 'teamcard' });
         });
         // Player afflictions + cards
         t.players.forEach((p, pi) => {
           (p.afflictions || []).forEach(a => {
-            items.push({ icon:a.icon||'💀', text:`<strong style="color:${t.color}">${p.name}</strong> aflijido por <em>${a.name}</em>`, remaining:a.remaining||'?', appliedBy:a.appliedBy||'?', color:'#ff8888', ti, pi, afId:a.id, type:'player' });
+            items.push({ icon: a.icon || '💀', text: `<strong style="color:${t.color}">${p.name}</strong> aflijido por <em>${a.name}</em>`, remaining: a.remaining || '?', appliedBy: a.appliedBy || '?', color: '#ff8888', ti, pi, afId: a.id, type: 'player' });
           });
           (p.cards || []).filter(cd => cd.type !== 'bad').forEach(cd => {
-            items.push({ icon:cd.icon||'✨', text:`<strong style="color:${t.color}">${p.name}</strong> tiene <em>${cd.name}</em>`, remaining:cd.duration||'?', appliedBy:'Host', color:'#aaccff', ti, pi, type:'playercard' });
+            items.push({ icon: cd.icon || '✨', text: `<strong style="color:${t.color}">${p.name}</strong> tiene <em>${cd.name}</em>`, remaining: cd.duration || '?', appliedBy: 'Host', color: '#aaccff', ti, pi, type: 'playercard' });
           });
         });
       });
@@ -8288,15 +8334,15 @@ REGLAS ESTRICTAS:
             <div style="font-size:11px;line-height:1.4;">${item.text}</div>
             <div style="font-family:Cinzel,serif;font-size:8px;color:${item.color};margin-top:1px;">⏳ ${item.remaining} · por ${item.appliedBy}</div>
           </div>
-          ${(item.type==='team'||item.type==='player') ? `<button onclick="removeActiveCard('${item.type}',${item.ti},${item.pi||0},${item.afId})" style="padding:2px 6px;border:1px solid #cc4444;color:#cc4444;background:transparent;font-size:9px;cursor:pointer;border-radius:2px;flex-shrink:0;font-family:Cinzel,serif;">✕</button>` : ''}
+          ${(item.type === 'team' || item.type === 'player') ? `<button onclick="removeActiveCard('${item.type}',${item.ti},${item.pi || 0},${item.afId})" style="padding:2px 6px;border:1px solid #cc4444;color:#cc4444;background:transparent;font-size:9px;cursor:pointer;border-radius:2px;flex-shrink:0;font-family:Cinzel,serif;">✕</button>` : ''}
         </div>`).join('');
     }
 
     function removeActiveCard(type, ti, pi, afId) {
       if (type === 'team') {
-        GAME.teams[ti].afflictions = (GAME.teams[ti].afflictions||[]).filter(a => String(a.id) !== String(afId));
+        GAME.teams[ti].afflictions = (GAME.teams[ti].afflictions || []).filter(a => String(a.id) !== String(afId));
       } else if (type === 'player') {
-        GAME.teams[ti].players[pi].afflictions = (GAME.teams[ti].players[pi].afflictions||[]).filter(a => String(a.id) !== String(afId));
+        GAME.teams[ti].players[pi].afflictions = (GAME.teams[ti].players[pi].afflictions || []).filter(a => String(a.id) !== String(afId));
       }
       renderActiveCardsPanel(); broadcastToTV(); saveGameState();
     }
@@ -8322,13 +8368,15 @@ REGLAS ESTRICTAS:
           const teamName = GAME.teams[bz.equipo]?.name || '';
           showBuzzWinner(bz.jugador, teamName, GAME.teams[bz.equipo]?.color || '#c9a227');
           showToast('🔔 ¡' + bz.jugador + ' (' + teamName + ') timbró primero!', 8000);
-          if (typeof pushNotif==='function') pushNotif('🔔', '<strong>'+bz.jugador+'</strong> timbró primero — '+teamName);
+          if (typeof pushNotif === 'function') pushNotif('🔔', '<strong>' + bz.jugador + '</strong> timbró primero — ' + teamName);
           const btn2 = document.getElementById('enable-buzz-btn');
-          if (btn2) { btn2.textContent = '🔔 Habilitar Botón para Seleccionados'; btn2.style.opacity='1'; }
+          if (btn2) { btn2.textContent = '🔔 Habilitar Botón para Seleccionados'; btn2.style.opacity = '1'; }
         });
         setTimeout(() => {
-          if (!done) { ref.off('value', handler); _buzzEnabled=false; broadcastToTV();
-            const btn2=document.getElementById('enable-buzz-btn'); if(btn2){btn2.textContent='🔔 Habilitar Botón para Seleccionados';btn2.style.opacity='1';} }
+          if (!done) {
+            ref.off('value', handler); _buzzEnabled = false; broadcastToTV();
+            const btn2 = document.getElementById('enable-buzz-btn'); if (btn2) { btn2.textContent = '🔔 Habilitar Botón para Seleccionados'; btn2.style.opacity = '1'; }
+          }
         }, 30000);
       }
     }
@@ -8336,11 +8384,11 @@ REGLAS ESTRICTAS:
     function showBuzzWinner(name, teamName, color) {
       document.getElementById('buzz-winner-banner')?.remove();
       const div = document.createElement('div'); div.id = 'buzz-winner-banner';
-      div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:600;background:rgba(0,0,0,.92);border:3px solid '+color+';border-radius:12px;padding:24px 40px;text-align:center;pointer-events:none;animation:buzzWinAnim .4s ease;';
-      div.innerHTML = '<div style="font-family:Cinzel Decorative,serif;font-size:12px;letter-spacing:4px;color:'+color+';margin-bottom:8px;text-shadow:0 0 20px '+color+'">⚡ TIMBRÓ PRIMERO ⚡</div><div style="font-family:Cinzel Decorative,serif;font-size:28px;color:#fff;text-shadow:0 0 30px '+color+',0 0 60px '+color+';margin-bottom:6px;">'+name+'</div><div style="font-family:Cinzel,serif;font-size:13px;color:'+color+';">'+teamName+'</div>';
+      div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:600;background:rgba(0,0,0,.92);border:3px solid ' + color + ';border-radius:12px;padding:24px 40px;text-align:center;pointer-events:none;animation:buzzWinAnim .4s ease;';
+      div.innerHTML = '<div style="font-family:Cinzel Decorative,serif;font-size:12px;letter-spacing:4px;color:' + color + ';margin-bottom:8px;text-shadow:0 0 20px ' + color + '">⚡ TIMBRÓ PRIMERO ⚡</div><div style="font-family:Cinzel Decorative,serif;font-size:28px;color:#fff;text-shadow:0 0 30px ' + color + ',0 0 60px ' + color + ';margin-bottom:6px;">' + name + '</div><div style="font-family:Cinzel,serif;font-size:13px;color:' + color + ';">' + teamName + '</div>';
       document.body.appendChild(div);
       setTimeout(() => div?.remove(), 6000);
-      if (!document.getElementById('bwa-style')) { const s=document.createElement('style');s.id='bwa-style';s.textContent='@keyframes buzzWinAnim{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}70%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}';document.head.appendChild(s); }
+      if (!document.getElementById('bwa-style')) { const s = document.createElement('style'); s.id = 'bwa-style'; s.textContent = '@keyframes buzzWinAnim{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}70%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}'; document.head.appendChild(s); }
     }
 
     async function generateHint() {
@@ -8357,15 +8405,15 @@ REGLAS ESTRICTAS:
       try {
         const model = localStorage.getItem('gemini_model') || 'gemini-2.5-flash';
         const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key, {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({contents:[{parts:[{text:'Genera UNA pista indirecta para esta pregunta de trivia. La pista NO debe mencionar la respuesta ni ningún sinónimo directo. Da contexto útil. Sé 1-2 oraciones completas y claras. No empieces con "La pista es". Pregunta: "' + q.pregunta + '" Respuesta correcta (NUNCA mencionar): "' + q.correcta + '". Escribe directamente la pista:'}]}], generationConfig:{maxOutputTokens:350, temperature:0.7}})
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: 'Genera UNA pista indirecta para esta pregunta de trivia. La pista NO debe mencionar la respuesta ni ningún sinónimo directo. Da contexto útil. Sé 1-2 oraciones completas y claras. No empieces con "La pista es". Pregunta: "' + q.pregunta + '" Respuesta correcta (NUNCA mencionar): "' + q.correcta + '". Escribe directamente la pista:' }] }], generationConfig: { maxOutputTokens: 350, temperature: 0.7 } })
         });
         const data = await r.json();
         const hint = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'No disponible';
         if (hintText) hintText.textContent = hint;
-        if (typeof pushNotif==='function') pushNotif('💡', '<em>Pista:</em> '+hint);
-        if (window.db) window.db.ref('rooms/'+TV_ROOM_CODE+'/hint').set({text:hint, ts:Date.now()});
-      } catch(e) { if (hintText) hintText.textContent = 'Error: ' + e.message; }
+        if (typeof pushNotif === 'function') pushNotif('💡', '<em>Pista:</em> ' + hint);
+        if (window.db) window.db.ref('rooms/' + TV_ROOM_CODE + '/hint').set({ text: hint, ts: Date.now() });
+      } catch (e) { if (hintText) hintText.textContent = 'Error: ' + e.message; }
       if (btn) { btn.textContent = '💡 Pista'; btn.disabled = false; }
     }
 
@@ -8376,8 +8424,8 @@ REGLAS ESTRICTAS:
       if (!tt || !ttText) return;
       const type = document.getElementById('q-type')?.value || '';
       let answerText = q.correcta || '(sin respuesta)';
-      if (type === 'order' && q._correctOrder) answerText = q._correctOrder.map((it,i)=>(i+1)+'° '+it).join(' → ');
-      else if (type === 'matching' && q._correctPares) answerText = q._correctPares.map(p=>p.l+' → '+p.r).join(' | ');
+      if (type === 'order' && q._correctOrder) answerText = q._correctOrder.map((it, i) => (i + 1) + '° ' + it).join(' → ');
+      else if (type === 'matching' && q._correctPares) answerText = q._correctPares.map(p => p.l + ' → ' + p.r).join(' | ');
       ttText.textContent = answerText;
       tt.style.display = 'block';
     }
@@ -8385,115 +8433,133 @@ REGLAS ESTRICTAS:
       const tt = document.getElementById('answer-tooltip'); if (tt) tt.style.display = 'none';
     }
 
+    function playSongClip() {
+      const inp = document.getElementById('song-url-input');
+      const url = inp?.value?.trim(); if (!url) { showToast('Pega una URL de YouTube'); return; }
+      const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+      if (!m) { showToast('URL no reconocida'); return; }
+      const videoId = m[1]; const tM = url.match(/[?&]t=(\d+)/); const start = tM ? tM[1] : '0';
+      const wrap = document.getElementById('song-player-wrap'); const iframe = document.getElementById('song-iframe');
+      if (wrap && iframe) { wrap.style.display = 'block'; iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&start=' + start + '&rel=0'; }
+      // Broadcast the song to TV
+      const lyric = document.getElementById('song-lyric')?.value?.trim() || '';
+      if (window.db) window.db.ref('rooms/' + TV_ROOM_CODE + '/songClip').set({ videoId, start, lyric, ts: Date.now() });
+      // Also update TV question with the lyric
+      if (lyric) {
+        const qText = document.getElementById('q-text');
+        if (qText && !qText.value.trim()) { qText.value = lyric; autoResizeTextarea(qText); }
+        setTimeout(broadcastToTV, 200);
+      }
+    }
+
     function playAudioClip() {
       const inp = document.getElementById('audio-url-input');
       const url = inp?.value?.trim(); if (!url) { showToast('Pega una URL de YouTube'); return; }
       const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
       if (!m) { showToast('URL no reconocida'); return; }
-      const videoId=m[1]; const tM=url.match(/[?&]t=(\d+)/); const start=tM?tM[1]:'0';
-      const wrap=document.getElementById('audio-player-wrap'); const iframe=document.getElementById('yt-iframe');
-      if (wrap&&iframe){wrap.style.display='block';iframe.src='https://www.youtube.com/embed/'+videoId+'?autoplay=1&start='+start+'&rel=0';}
-      if (window.db) window.db.ref('rooms/'+TV_ROOM_CODE+'/audioClip').set({videoId,start,ts:Date.now()});
+      const videoId = m[1]; const tM = url.match(/[?&]t=(\d+)/); const start = tM ? tM[1] : '0';
+      const wrap = document.getElementById('audio-player-wrap'); const iframe = document.getElementById('yt-iframe');
+      if (wrap && iframe) { wrap.style.display = 'block'; iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&start=' + start + '&rel=0'; }
+      if (window.db) window.db.ref('rooms/' + TV_ROOM_CODE + '/audioClip').set({ videoId, start, ts: Date.now() });
     }
 
     function adjustScore(ti, pts) {
       if (!GAME.teams?.[ti]) return;
-      GAME.teams[ti].score = Math.max(0, (GAME.teams[ti].score||0) + pts);
+      GAME.teams[ti].score = Math.max(0, (GAME.teams[ti].score || 0) + pts);
       renderScoreboard(); broadcastToTV(); saveGameState();
-      showToast(GAME.teams[ti].name + ': ' + (pts>0?'+':'') + pts + ' pt');
-      if (typeof pushNotif==='function') pushNotif('⚡','<strong>'+GAME.teams[ti].name+'</strong> '+(pts>0?'+':'')+pts+'pt');
+      showToast(GAME.teams[ti].name + ': ' + (pts > 0 ? '+' : '') + pts + ' pt');
+      if (typeof pushNotif === 'function') pushNotif('⚡', '<strong>' + GAME.teams[ti].name + '</strong> ' + (pts > 0 ? '+' : '') + pts + 'pt');
     }
 
     function startListeningForPlayerJoins() {
       if (!window.db || !TV_ROOM_CODE) return;
-      window.db.ref('rooms/'+TV_ROOM_CODE+'/playerJoins').on('child_added', teamSnap => {
+      window.db.ref('rooms/' + TV_ROOM_CODE + '/playerJoins').on('child_added', teamSnap => {
         const ti = parseInt(teamSnap.key);
         if (!GAME.teams?.[ti]) return;
         teamSnap.forEach(playerSnap => {
           const data = playerSnap.val(); if (!data?.name) return;
           const team = GAME.teams[ti];
-          if (team.players.some(p => p.name===data.name)) return;
+          if (team.players.some(p => p.name === data.name)) return;
           const phIdx = team.players.findIndex(p => /^(Guerrero|Jugador|Player)\s*\d+$/i.test(p.name));
-          if (phIdx>=0) { team.players[phIdx].name=data.name; }
-          else { team.players.push({name:data.name,correct:0,cards:[],afflictions:[]}); }
+          if (phIdx >= 0) { team.players[phIdx].name = data.name; }
+          else { team.players.push({ name: data.name, correct: 0, cards: [], afflictions: [] }); }
           renderScoreboard(); renderParticipantSelector(); renderTeamBuzzerBtns();
           renderInventoryModal(); broadcastToTV(); saveGameState();
-          if (typeof pushNotif==='function') pushNotif('👤','<strong>'+data.name+'</strong> ingresó a <strong>'+team.name+'</strong>');
-          showToast('👤 '+data.name+' se unió a '+team.name, 4000);
+          if (typeof pushNotif === 'function') pushNotif('👤', '<strong>' + data.name + '</strong> ingresó a <strong>' + team.name + '</strong>');
+          showToast('👤 ' + data.name + ' se unió a ' + team.name, 4000);
           if (document.getElementById('players-dashboard-content')) renderPlayersDashboard();
         });
       });
 
-      window.db.ref('rooms/'+TV_ROOM_CODE+'/cardActions').on('child_added', snap => {
+      window.db.ref('rooms/' + TV_ROOM_CODE + '/cardActions').on('child_added', snap => {
         const action = snap.val();
-        if (!action || Date.now()-action.ts > 60000) return;
+        if (!action || Date.now() - action.ts > 60000) return;
         snap.ref.remove();
         const srcTeam = GAME.teams[action.teamIdx]; if (!srcTeam) return;
-        const player = srcTeam.players.find(p=>p.name===action.playerName);
+        const player = srcTeam.players.find(p => p.name === action.playerName);
 
-        if (action.actionType==='use') {
-          srcTeam.cards.push({...action.card});
-          executeCardEffect(action.teamIdx, srcTeam.cards.length-1);
-          if (player?.cards) player.cards=player.cards.filter((_,i)=>i!==action.cardIdx);
+        if (action.actionType === 'use') {
+          srcTeam.cards.push({ ...action.card });
+          executeCardEffect(action.teamIdx, srcTeam.cards.length - 1);
+          if (player?.cards) player.cards = player.cards.filter((_, i) => i !== action.cardIdx);
           renderTeamCards(); updateInventoryBadge(); renderInventoryModal();
           renderActiveCardsPanel(); broadcastToTV(); saveGameState();
-          if (typeof pushNotif==='function') pushNotif(action.card.icon||'🃏','<strong>'+action.playerName+'</strong> usó <em>'+action.card.name+'</em>');
+          if (typeof pushNotif === 'function') pushNotif(action.card.icon || '🃏', '<strong>' + action.playerName + '</strong> usó <em>' + action.card.name + '</em>');
 
-        } else if (action.actionType==='afflict-player') {
-          const tgtTeam=GAME.teams[action.targetTeamIdx];
-          const tgtPlayer=tgtTeam?.players.find(p=>p.name===action.targetPlayerName);
+        } else if (action.actionType === 'afflict-player') {
+          const tgtTeam = GAME.teams[action.targetTeamIdx];
+          const tgtPlayer = tgtTeam?.players.find(p => p.name === action.targetPlayerName);
           if (tgtPlayer) {
-            tgtPlayer.afflictions=tgtPlayer.afflictions||[];
-            const affl={id:Date.now(),icon:action.card.icon||'💀',name:action.card.name,effect:action.card.effect,remaining:action.card.duration||'1 pregunta',appliedBy:action.playerName,appliedByTeam:srcTeam.name};
+            tgtPlayer.afflictions = tgtPlayer.afflictions || [];
+            const affl = { id: Date.now(), icon: action.card.icon || '💀', name: action.card.name, effect: action.card.effect, remaining: action.card.duration || '1 pregunta', appliedBy: action.playerName, appliedByTeam: srcTeam.name };
             tgtPlayer.afflictions.push(affl);
-            if (player?.cards) player.cards=player.cards.filter((_,i)=>i!==action.cardIdx);
-            else srcTeam.cards=srcTeam.cards.filter((_,i)=>i!==action.cardIdx);
+            if (player?.cards) player.cards = player.cards.filter((_, i) => i !== action.cardIdx);
+            else srcTeam.cards = srcTeam.cards.filter((_, i) => i !== action.cardIdx);
             renderInventoryModal(); renderActiveCardsPanel(); broadcastToTV(); saveGameState();
-            if (typeof pushNotif==='function') pushNotif('💀','<strong>'+action.playerName+'</strong> afligió a <strong>'+action.targetPlayerName+'</strong>: <em>'+action.card.name+'</em>');
+            if (typeof pushNotif === 'function') pushNotif('💀', '<strong>' + action.playerName + '</strong> afligió a <strong>' + action.targetPlayerName + '</strong>: <em>' + action.card.name + '</em>');
           }
-        } else if (action.actionType==='afflict-team') {
-          const tgtTeam=GAME.teams[action.targetTeamIdx];
+        } else if (action.actionType === 'afflict-team') {
+          const tgtTeam = GAME.teams[action.targetTeamIdx];
           if (tgtTeam) {
-            tgtTeam.afflictions=tgtTeam.afflictions||[];
-            const affl={id:Date.now(),icon:action.card.icon||'💀',name:action.card.name,effect:action.card.effect,remaining:action.card.duration||'1 pregunta',appliedBy:action.playerName,appliedByTeam:srcTeam.name};
+            tgtTeam.afflictions = tgtTeam.afflictions || [];
+            const affl = { id: Date.now(), icon: action.card.icon || '💀', name: action.card.name, effect: action.card.effect, remaining: action.card.duration || '1 pregunta', appliedBy: action.playerName, appliedByTeam: srcTeam.name };
             tgtTeam.afflictions.push(affl);
-            if (player?.cards) player.cards=player.cards.filter((_,i)=>i!==action.cardIdx);
-            else srcTeam.cards=srcTeam.cards.filter((_,i)=>i!==action.cardIdx);
+            if (player?.cards) player.cards = player.cards.filter((_, i) => i !== action.cardIdx);
+            else srcTeam.cards = srcTeam.cards.filter((_, i) => i !== action.cardIdx);
             renderInventoryModal(); renderActiveCardsPanel(); broadcastToTV(); saveGameState();
-            if (typeof pushNotif==='function') pushNotif('💀','<strong>'+action.playerName+'</strong> afligió al equipo <strong>'+tgtTeam.name+'</strong>: <em>'+action.card.name+'</em>');
+            if (typeof pushNotif === 'function') pushNotif('💀', '<strong>' + action.playerName + '</strong> afligió al equipo <strong>' + tgtTeam.name + '</strong>: <em>' + action.card.name + '</em>');
           }
         }
       });
     }
 
     function deletePlayerFromTeam(ti, pi) {
-      const team=GAME.teams[ti]; if(!team?.players[pi]) return;
-      const name=team.players[pi].name; if(!confirm('¿Eliminar a '+name+'?')) return;
-      team.players.splice(pi,1); renderScoreboard(); broadcastToTV(); saveGameState();
-      if(document.getElementById('players-dashboard-content')) renderPlayersDashboard();
-      if(window.db) window.db.ref('rooms/'+TV_ROOM_CODE+'/players/'+ti+'/'+encodeURIComponent(name)).remove();
-      showToast('🗑 '+name+' eliminado');
+      const team = GAME.teams[ti]; if (!team?.players[pi]) return;
+      const name = team.players[pi].name; if (!confirm('¿Eliminar a ' + name + '?')) return;
+      team.players.splice(pi, 1); renderScoreboard(); broadcastToTV(); saveGameState();
+      if (document.getElementById('players-dashboard-content')) renderPlayersDashboard();
+      if (window.db) window.db.ref('rooms/' + TV_ROOM_CODE + '/players/' + ti + '/' + encodeURIComponent(name)).remove();
+      showToast('🗑 ' + name + ' eliminado');
     }
     function removeAfflictionFromPlayer(ti, pi, afId) {
-      const p=GAME.teams[ti]?.players[pi]; if(!p) return;
-      p.afflictions=(p.afflictions||[]).filter(a=>String(a.id)!==String(afId));
+      const p = GAME.teams[ti]?.players[pi]; if (!p) return;
+      p.afflictions = (p.afflictions || []).filter(a => String(a.id) !== String(afId));
       renderActiveCardsPanel(); broadcastToTV(); saveGameState();
-      if(document.getElementById('players-dashboard-content')) renderPlayersDashboard();
+      if (document.getElementById('players-dashboard-content')) renderPlayersDashboard();
       showToast('✅ Aflixión removida');
     }
     function removeAfflictionFromTeam(ti, afId) {
-      const t=GAME.teams[ti]; if(!t) return;
-      t.afflictions=(t.afflictions||[]).filter(a=>String(a.id)!==String(afId));
+      const t = GAME.teams[ti]; if (!t) return;
+      t.afflictions = (t.afflictions || []).filter(a => String(a.id) !== String(afId));
       renderActiveCardsPanel(); broadcastToTV(); saveGameState(); showToast('✅ Aflixión de equipo removida');
     }
 
     // getActivePts with double detection
-    function getActivePts_override() {} // placeholder — actual override below
+    function getActivePts_override() { } // placeholder — actual override below
 
 
-    
+
     // ==================== BUZZ + HINT + AUDIO + PLAYER SYNC ====================
-            
 
 
 
@@ -8503,7 +8569,8 @@ REGLAS ESTRICTAS:
 
 
 
-        // ==================== INIT ====================
+
+    // ==================== INIT ====================
 
     // ==================== NOTIFICATIONS ====================
     let _notifCount = 0;
@@ -8914,7 +8981,7 @@ REGLAS ESTRICTAS:
       }
 
       showScreen('config');
-      
+
       // Ensure the room is immediately available for players even before the game officially starts
       setTimeout(broadcastToTV, 1500);
     })();
